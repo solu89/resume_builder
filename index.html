@@ -1,1 +1,2480 @@
-hll
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SOLU DIGITAL RESUME BUILDER — 120+ Pro A4 Resume & Biodata Studio</title>
+
+  <!-- Tailwind CSS & FontAwesome 6 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&family=Roboto:wght@300;400;500;700&family=Merriweather:wght@400;700&family=Playfair+Display:wght@600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ==========================================================================
+       APP SHELL THEME VARIABLES (DARK & LIGHT UI)
+       ========================================================================== */
+    :root {
+      --bg-app: #0b101b;
+      --bg-panel: #111827;
+      --bg-card: #182235;
+      --bg-input: #0d1422;
+      --border-color: #26344d;
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+      --text-dim: #64748b;
+    }
+
+    [data-theme="light"] {
+      --bg-app: #e2e8f0;
+      --bg-panel: #ffffff;
+      --bg-card: #f8fafc;
+      --bg-input: #ffffff;
+      --border-color: #cbd5e1;
+      --text-main: #0f172a;
+      --text-sub: #475569;
+      --text-dim: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      max-width: 100vw;
+      overflow-x: hidden;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-app);
+      color: var(--text-main);
+    }
+
+    ::-webkit-scrollbar { width: 7px; height: 7px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 999px; }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    .surface-panel { background-color: var(--bg-panel); border-color: var(--border-color); }
+    .surface-card { background-color: var(--bg-card); border-color: var(--border-color); }
+    .surface-input { background-color: var(--bg-input); border-color: var(--border-color); color: var(--text-main); }
+    .text-primary-ui { color: var(--text-main); }
+    .text-sub-ui { color: var(--text-sub); }
+    .text-dim-ui { color: var(--text-dim); }
+    .border-ui { border-color: var(--border-color); }
+
+    /* ==========================================================================
+       EXACT A4 PAPER CANVAS (210mm x 297mm)
+       ========================================================================== */
+    #a4-viewport-wrapper {
+      width: 100%;
+      overflow: auto;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 16px;
+    }
+
+    #a4-scale-box {
+      transform-origin: top center;
+      transition: transform 0.18s ease;
+    }
+
+    #resume-sheet {
+      width: 210mm;
+      min-height: 297mm;
+      background: #ffffff;
+      color: #1e293b;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+      position: relative;
+      overflow: hidden;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
+    }
+
+    /* Resume Font Families */
+    .font-resume-inter { font-family: 'Inter', sans-serif; }
+    .font-resume-poppins { font-family: 'Poppins', sans-serif; }
+    .font-resume-roboto { font-family: 'Roboto', sans-serif; }
+    .font-resume-serif { font-family: 'Merriweather', Georgia, serif; }
+    .font-resume-playfair { font-family: 'Playfair Display', Georgia, serif; }
+    .font-resume-mono { font-family: 'JetBrains Mono', monospace; }
+
+    /* Signature Pad Canvas */
+    #sig-canvas {
+      touch-action: none;
+      cursor: crosshair;
+      background: #ffffff;
+    }
+
+    /* Toast Notification */
+    #toast-container {
+      position: fixed;
+      bottom: 74px;
+      right: 16px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+    @media (min-width: 1024px) {
+      #toast-container { bottom: 20px; }
+    }
+    .toast-item {
+      background: var(--bg-panel);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid #2563eb;
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+      animation: slideUp 0.22s ease-out;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(16px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* ==========================================================================
+       PRINT & SAVE A4 PDF ENGINE (@media print)
+       ========================================================================== */
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+
+    @media print {
+      html, body {
+        width: 210mm !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        overflow: visible !important;
+      }
+
+      header,
+      #editor-pane,
+      #preview-toolbar,
+      #mobile-bottom-bar,
+      #toast-container,
+      #code-modal,
+      #template-gallery-modal {
+        display: none !important;
+      }
+
+      #main-workspace,
+      #preview-pane,
+      #a4-viewport-wrapper,
+      #a4-scale-box {
+        display: block !important;
+        position: static !important;
+        width: 210mm !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        transform: none !important;
+        overflow: visible !important;
+        background: #ffffff !important;
+      }
+
+      #resume-sheet {
+        width: 210mm !important;
+        min-height: 297mm !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- ========================================================================
+       TOP EXECUTIVE HEADER BAR
+       ======================================================================== -->
+  <header class="surface-panel border-b sticky top-0 z-40 px-3 sm:px-5 py-2.5 flex flex-wrap items-center justify-between gap-2">
+    <div class="flex items-center gap-2.5 min-w-0">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-600 flex items-center justify-center text-white shadow-lg shrink-0">
+        <i class="fa-solid fa-file-signature text-lg"></i>
+      </div>
+      <div class="min-w-0">
+        <h1 class="text-sm sm:text-lg font-extrabold tracking-tight truncate bg-gradient-to-r from-blue-400 via-indigo-400 to-violet-400 bg-clip-text text-transparent">
+          SOLU DIGITAL RESUME BUILDER
+        </h1>
+        <p class="text-[10px] sm:text-[11px] text-sub-ui font-medium truncate">
+          120 Unique Pro Templates • Indian Biodata & CV • Instant A4 PDF
+        </p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+      <button type="button" id="btn-open-gallery" class="px-3 h-9 sm:h-10 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:opacity-95 text-white text-xs font-extrabold flex items-center gap-1.5 shadow transition" title="Browse All 120 Templates">
+        <i class="fa-solid fa-grid-2"></i>
+        <span>120 Templates</span>
+      </button>
+
+      <button type="button" id="btn-sample-data" class="px-2.5 sm:px-3 h-9 sm:h-10 rounded-xl surface-card border hover:border-blue-500 text-xs font-bold flex items-center gap-1.5 transition" title="Fill Demo Resume Data">
+        <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
+        <span class="hidden sm:inline">Demo Fill</span>
+      </button>
+
+      <button type="button" id="btn-export-json" class="px-2.5 sm:px-3 h-9 sm:h-10 rounded-xl surface-card border hover:border-emerald-500 text-xs font-bold flex items-center gap-1.5 transition" title="Backup Data as JSON">
+        <i class="fa-solid fa-file-export text-emerald-400"></i>
+        <span class="hidden md:inline">Backup</span>
+      </button>
+
+      <label class="px-2.5 sm:px-3 h-9 sm:h-10 rounded-xl surface-card border hover:border-indigo-500 text-xs font-bold flex items-center gap-1.5 cursor-pointer transition" title="Restore JSON Backup">
+        <i class="fa-solid fa-file-import text-indigo-400"></i>
+        <span class="hidden md:inline">Restore</span>
+        <input type="file" id="input-import-json" accept=".json,application/json" class="hidden" />
+      </label>
+
+      <button type="button" id="btn-reset-form" class="px-2.5 sm:px-3 h-9 sm:h-10 rounded-xl surface-card border hover:border-red-500 text-xs font-bold flex items-center gap-1.5 transition" title="Clear All Fields">
+        <i class="fa-solid fa-rotate-left text-red-400"></i>
+        <span class="hidden lg:inline">Reset</span>
+      </button>
+
+      <button type="button" id="btn-open-code" class="px-2.5 sm:px-3 h-9 sm:h-10 rounded-xl surface-card border hover:border-violet-500 text-xs font-bold flex items-center gap-1.5 transition" title="Copy Standalone HTML Code">
+        <i class="fa-solid fa-code text-violet-400"></i>
+        <span class="hidden xl:inline">HTML</span>
+      </button>
+
+      <button type="button" id="btn-theme-toggle" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl surface-card border hover:border-blue-500 flex items-center justify-center transition" title="Toggle Dark/Light UI">
+        <i id="ui-theme-icon" class="fa-solid fa-sun text-amber-400 text-sm"></i>
+      </button>
+
+      <button type="button" id="btn-print-pdf" class="px-3.5 sm:px-4 h-9 sm:h-10 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:opacity-95 text-white text-xs sm:text-sm font-extrabold flex items-center gap-1.5 shadow-lg transition">
+        <i class="fa-solid fa-print"></i>
+        <span>Print / Save PDF</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       MAIN SPLIT WORKSPACE (LEFT EDITOR 45% / RIGHT LIVE A4 PREVIEW 55%)
+       ======================================================================== -->
+  <div id="main-workspace" class="flex-1 flex flex-col lg:flex-row overflow-hidden pb-16 lg:pb-0">
+
+    <!-- LEFT PANE: RESUME & BIODATA EDITOR -->
+    <section id="editor-pane" class="w-full lg:w-[45%] xl:w-[44%] surface-panel border-r flex flex-col lg:h-[calc(100vh-61px)] overflow-y-auto">
+
+      <!-- DESIGN & TEMPLATE CUSTOMIZER BAR -->
+      <div class="p-3.5 sm:p-4 border-b border-ui surface-card space-y-3">
+        <div class="flex items-center justify-between gap-2">
+          <span class="text-xs font-extrabold uppercase tracking-wider text-blue-400 flex items-center gap-1.5">
+            <i class="fa-solid fa-layer-group"></i> 1. Template (120 Designs)
+          </span>
+          <div class="flex items-center gap-1.5">
+            <button type="button" id="btn-prev-tpl" class="px-2 py-1 rounded-lg surface-input border hover:border-blue-500 text-xs font-bold" title="Previous Template">◀</button>
+            <button type="button" id="btn-next-tpl" class="px-2 py-1 rounded-lg surface-input border hover:border-blue-500 text-xs font-bold" title="Next Template">▶</button>
+            <button type="button" id="btn-browse-all-inline" class="px-2.5 py-1 rounded-lg bg-blue-600 text-white text-[11px] font-extrabold">Browse 120</button>
+          </div>
+        </div>
+
+        <!-- Category Filter + Quick Dropdown for 120 Templates -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <select id="tpl-category-filter" class="px-2.5 py-1.5 rounded-xl surface-input border text-xs font-bold outline-none focus:border-blue-500">
+            <option value="ALL">All Categories (120 Templates)</option>
+            <option value="Executive">1. Modern Executive (15)</option>
+            <option value="Sidebar">2. Creative Left Sidebar (15)</option>
+            <option value="RightSidebar">3. Right Sidebar Compact (15)</option>
+            <option value="Banner">4. Corporate Banner Header (15)</option>
+            <option value="Biodata">5. Indian Job Biodata (15)</option>
+            <option value="ATS">6. Classic ATS Standard (15)</option>
+            <option value="Tech">7. Tech & Developer Pro (15)</option>
+            <option value="Academic">8. Elegant Academic & Fresher (15)</option>
+          </select>
+
+          <select id="tpl-quick-select" class="px-2.5 py-1.5 rounded-xl surface-input border text-xs font-bold outline-none focus:border-blue-500"></select>
+        </div>
+
+        <!-- Horizontal Scrollable Filtered Pills -->
+        <div id="template-pills" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5"></div>
+
+        <!-- Accent Color Swatches + Font Family -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+          <div>
+            <label class="block text-[11px] font-bold text-sub-ui mb-1.5">Accent Theme Color</label>
+            <div class="flex items-center gap-1.5 flex-wrap" id="color-swatches">
+              <button type="button" class="color-dot w-6 h-6 rounded-full border-2 border-white shadow" style="background:#1e3a8a" data-color="#1e3a8a" title="Executive Navy"></button>
+              <button type="button" class="color-dot w-6 h-6 rounded-full border-2 border-transparent shadow" style="background:#0f766e" data-color="#0f766e" title="Teal Pro"></button>
+              <button type="button" class="color-dot w-6 h-6 rounded-full border-2 border-transparent shadow" style="background:#b91c1c" data-color="#b91c1c" title="Crimson Red"></button>
+              <button type="button" class="color-dot w-6 h-6 rounded-full border-2 border-transparent shadow" style="background:#4338ca" data-color="#4338ca" title="Royal Indigo"></button>
+              <button type="button" class="color-dot w-6 h-6 rounded-full border-2 border-transparent shadow" style="background:#15803d" data-color="#15803d" title="Emerald Green"></button>
+              <button type="button" class="color-dot w-6 h-6 rounded-full border-2 border-transparent shadow" style="background:#6d28d9" data-color="#6d28d9" title="Violet"></button>
+              <button type="button" class="color-dot w-6 h-6 rounded-full border-2 border-transparent shadow" style="background:#b45309" data-color="#b45309" title="Warm Amber"></button>
+              <button type="button" class="color-dot w-6 h-6 rounded-full border-2 border-transparent shadow" style="background:#1e293b" data-color="#1e293b" title="Charcoal Slate"></button>
+              <input type="color" id="custom-accent-color" value="#1e3a8a" class="w-6 h-6 rounded cursor-pointer border-0 bg-transparent p-0" title="Custom Color" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-sub-ui mb-1.5">Resume Typography</label>
+            <select id="resume-font-select" class="w-full px-3 py-1.5 rounded-xl surface-input border text-xs font-bold outline-none focus:border-blue-500">
+              <option value="font-resume-inter">Inter (Modern Clean)</option>
+              <option value="font-resume-poppins">Poppins (Geometric Stylish)</option>
+              <option value="font-resume-roboto">Roboto (Corporate Standard)</option>
+              <option value="font-resume-serif">Merriweather (Classic Serif)</option>
+              <option value="font-resume-playfair">Playfair Display (Editorial)</option>
+              <option value="font-resume-mono">JetBrains Mono (Developer)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- EDITOR SECTION TABS -->
+      <div class="px-3 py-2.5 border-b border-ui flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0">
+        <button type="button" class="ed-tab active px-3 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold shrink-0" data-tab="basic">👤 Basic & Photo</button>
+        <button type="button" class="ed-tab px-3 py-2 rounded-xl surface-card border text-xs font-bold shrink-0" data-tab="objective">🎯 Objective</button>
+        <button type="button" class="ed-tab px-3 py-2 rounded-xl surface-card border text-xs font-bold shrink-0" data-tab="education">🎓 Education</button>
+        <button type="button" class="ed-tab px-3 py-2 rounded-xl surface-card border text-xs font-bold shrink-0" data-tab="experience">💼 Experience</button>
+        <button type="button" class="ed-tab px-3 py-2 rounded-xl surface-card border text-xs font-bold shrink-0" data-tab="skills">⚡ Skills</button>
+        <button type="button" class="ed-tab px-3 py-2 rounded-xl surface-card border text-xs font-bold shrink-0" data-tab="personal">🇮🇳 Biodata & Sign</button>
+        <button type="button" class="ed-tab px-3 py-2 rounded-xl surface-card border text-xs font-bold shrink-0" data-tab="custom">➕ Custom</button>
+      </div>
+
+      <!-- EDITOR FORM SECTIONS CONTAINER -->
+      <div class="p-4 space-y-4 flex-1">
+
+        <!-- TAB 1: BASIC INFO & PHOTO -->
+        <div id="tab-basic" class="ed-panel space-y-3.5">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-sub-ui mb-1">Full Name *</label>
+              <input type="text" id="f-name" placeholder="e.g. RAHUL KUMAR SHARMA" class="w-full px-3 py-2 rounded-xl surface-input border text-sm font-semibold" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-sub-ui mb-1">Target Role / Job Title</label>
+              <input type="text" id="f-role" placeholder="e.g. Computer Operator & Office Executive" class="w-full px-3 py-2 rounded-xl surface-input border text-sm font-semibold" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-sub-ui mb-1">Mobile Number *</label>
+              <input type="text" id="f-phone" placeholder="e.g. +91 98765 43210" class="w-full px-3 py-2 rounded-xl surface-input border text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-sub-ui mb-1">Email Address</label>
+              <input type="email" id="f-email" placeholder="e.g. rahul.sharma@email.com" class="w-full px-3 py-2 rounded-xl surface-input border text-sm" />
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-bold text-sub-ui mb-1">Full Address / City, State</label>
+              <input type="text" id="f-address" placeholder="e.g. Ward No. 12, Station Road, Jaipur, Rajasthan - 302001" class="w-full px-3 py-2 rounded-xl surface-input border text-sm" />
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-bold text-sub-ui mb-1">LinkedIn / Portfolio / Website (Optional)</label>
+              <input type="text" id="f-link" placeholder="e.g. linkedin.com/in/rahulsharma" class="w-full px-3 py-2 rounded-xl surface-input border text-sm" />
+            </div>
+          </div>
+
+          <div class="surface-card border rounded-2xl p-3.5 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold">📸 Candidate Passport Photo</span>
+              <button type="button" id="btn-remove-photo" class="text-[11px] font-bold text-red-400 hover:underline">Remove Photo</button>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+              <label class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold cursor-pointer shadow">
+                <i class="fa-solid fa-upload mr-1.5"></i> Upload Photo
+                <input type="file" id="f-photo-input" accept="image/*" class="hidden" />
+              </label>
+              <select id="f-photo-shape" class="px-3 py-2 rounded-xl surface-input border text-xs font-bold">
+                <option value="rounded">Rounded Passport Box</option>
+                <option value="circle">Circle Frame</option>
+                <option value="square">Sharp Square</option>
+                <option value="hidden">Hide Photo on Resume</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: CAREER OBJECTIVE -->
+        <div id="tab-objective" class="ed-panel hidden space-y-3.5">
+          <div class="surface-card border rounded-2xl p-3.5 space-y-2.5">
+            <label class="block text-xs font-bold text-blue-400">✨ 1-Click Smart Career Objective Helper</label>
+            <div class="flex gap-2">
+              <select id="objective-preset-select" class="flex-1 px-3 py-2 rounded-xl surface-input border text-xs font-bold">
+                <option value="">-- Select a Ready-Made Objective --</option>
+                <option value="fresher">Fresher (Entry-Level Job)</option>
+                <option value="office">Office Assistant / Computer Operator</option>
+                <option value="sales">Sales & Marketing Executive</option>
+                <option value="account">Accountant / Tally Operator</option>
+                <option value="teacher">Teacher / Academic Faculty</option>
+                <option value="it">IT / Software & Web Developer</option>
+                <option value="customer">Customer Support / Front Desk</option>
+                <option value="general">General Professional Summary</option>
+              </select>
+              <button type="button" id="btn-apply-objective" class="px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold shrink-0">Insert</button>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-sub-ui mb-1">Career Objective / Professional Summary</label>
+            <textarea id="f-objective" rows="5" placeholder="Write your career objective..." class="w-full p-3 rounded-xl surface-input border text-sm leading-relaxed"></textarea>
+          </div>
+        </div>
+
+        <!-- TAB 3: EDUCATION -->
+        <div id="tab-education" class="ed-panel hidden space-y-3.5">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold">Layout Style:</span>
+              <select id="f-edu-style" class="px-2.5 py-1.5 rounded-lg surface-input border text-xs font-bold">
+                <option value="table">Structured Table (Best for Indian Biodata)</option>
+                <option value="list">Modern Clean List</option>
+              </select>
+            </div>
+            <button type="button" id="btn-add-edu" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow">
+              + Add Qualification
+            </button>
+          </div>
+          <div id="edu-list-container" class="space-y-3"></div>
+        </div>
+
+        <!-- TAB 4: WORK EXPERIENCE -->
+        <div id="tab-experience" class="ed-panel hidden space-y-3.5">
+          <div class="flex items-center justify-between">
+            <p class="text-xs text-sub-ui">Leave empty if Fresher (section hides automatically).</p>
+            <button type="button" id="btn-add-exp" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow">
+              + Add Experience
+            </button>
+          </div>
+          <div id="exp-list-container" class="space-y-3"></div>
+        </div>
+
+        <!-- TAB 5: SKILLS -->
+        <div id="tab-skills" class="ed-panel hidden space-y-3.5">
+          <div>
+            <label class="block text-xs font-bold text-sub-ui mb-1">Add Skill / Technical Competency</label>
+            <div class="flex gap-2">
+              <input type="text" id="skill-input" placeholder="e.g. MS Excel, Tally Prime, Hindi/English Typing..." class="flex-1 px-3 py-2 rounded-xl surface-input border text-sm" />
+              <button type="button" id="btn-add-skill" class="px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold">Add</button>
+            </div>
+          </div>
+
+          <div>
+            <div class="text-[11px] font-bold text-dim-ui mb-1.5">Quick Tap Suggestions:</div>
+            <div class="flex flex-wrap gap-1.5" id="skill-suggestions">
+              <button type="button" class="skill-chip px-2.5 py-1 rounded-lg surface-card border hover:border-blue-500 text-xs font-semibold">+ MS Office (Word, Excel, PPT)</button>
+              <button type="button" class="skill-chip px-2.5 py-1 rounded-lg surface-card border hover:border-blue-500 text-xs font-semibold">+ Tally Prime & GST</button>
+              <button type="button" class="skill-chip px-2.5 py-1 rounded-lg surface-card border hover:border-blue-500 text-xs font-semibold">+ English & Hindi Typing</button>
+              <button type="button" class="skill-chip px-2.5 py-1 rounded-lg surface-card border hover:border-blue-500 text-xs font-semibold">+ Data Entry & Internet</button>
+              <button type="button" class="skill-chip px-2.5 py-1 rounded-lg surface-card border hover:border-blue-500 text-xs font-semibold">+ Customer Handling</button>
+              <button type="button" class="skill-chip px-2.5 py-1 rounded-lg surface-card border hover:border-blue-500 text-xs font-semibold">+ Team Leadership</button>
+              <button type="button" class="skill-chip px-2.5 py-1 rounded-lg surface-card border hover:border-blue-500 text-xs font-semibold">+ Time Management</button>
+            </div>
+          </div>
+
+          <div id="active-skills-list" class="flex flex-wrap gap-2 pt-2"></div>
+        </div>
+
+        <!-- TAB 6: INDIAN BIODATA PERSONAL DETAILS, DECLARATION & SIGNATURE -->
+        <div id="tab-personal" class="ed-panel hidden space-y-3.5">
+          <div class="flex items-center justify-between surface-card border rounded-xl p-3">
+            <span class="text-xs font-bold">Show Personal Profile Table on Resume</span>
+            <input type="checkbox" id="f-show-personal" checked class="w-4 h-4 accent-blue-600" />
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-sub-ui mb-1">Father's Name</label>
+              <input type="text" id="f-father" placeholder="e.g. Shri Rajesh Sharma" class="w-full px-3 py-2 rounded-xl surface-input border text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-sub-ui mb-1">Mother's Name (Optional)</label>
+              <input type="text" id="f-mother" placeholder="e.g. Smt. Sunita Sharma" class="w-full px-3 py-2 rounded-xl surface-input border text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-sub-ui mb-1">Date of Birth</label>
+              <input type="text" id="f-dob" placeholder="e.g. 15 August 1999" class="w-full px-3 py-2 rounded-xl surface-input border text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-sub-ui mb-1">Gender</label>
+              <select id="f-gender" class="w-full px-3 py-2 rounded-xl surface-input border text-sm font-semibold">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-sub-ui mb-1">Marital Status</label>
+              <select id="f-marital" class="w-full px-3 py-2 rounded-xl surface-input border text-sm font-semibold">
+                <option value="Unmarried">Unmarried</option>
+                <option value="Married">Married</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-sub-ui mb-1">Nationality</label>
+              <input type="text" id="f-nationality" value="Indian" class="w-full px-3 py-2 rounded-xl surface-input border text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-sub-ui mb-1">Languages Known</label>
+              <input type="text" id="f-languages" placeholder="e.g. Hindi, English" class="w-full px-3 py-2 rounded-xl surface-input border text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-sub-ui mb-1">Hobbies / Interests</label>
+              <input type="text" id="f-hobbies" placeholder="e.g. Reading, Computer Learning" class="w-full px-3 py-2 rounded-xl surface-input border text-sm" />
+            </div>
+          </div>
+
+          <div class="surface-card border rounded-2xl p-3.5 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold">📜 Formal Declaration & Date/Place</span>
+              <input type="checkbox" id="f-show-declaration" checked class="w-4 h-4 accent-blue-600" />
+            </div>
+            <textarea id="f-declaration" rows="2" class="w-full p-2.5 rounded-xl surface-input border text-xs">I hereby declare that all the information furnished above is true, complete, and correct to the best of my knowledge and belief.</textarea>
+            <div class="grid grid-cols-2 gap-2">
+              <input type="text" id="f-place" placeholder="Place (e.g. Jaipur)" class="px-3 py-1.5 rounded-xl surface-input border text-xs" />
+              <input type="text" id="f-date" placeholder="Date (e.g. 16/11/2026)" class="px-3 py-1.5 rounded-xl surface-input border text-xs" />
+            </div>
+          </div>
+
+          <div class="surface-card border rounded-2xl p-3.5 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold">✍️ Candidate Signature (Draw or Upload)</span>
+              <div class="flex gap-2">
+                <button type="button" id="btn-clear-sig" class="text-[11px] font-bold text-red-400 hover:underline">Clear</button>
+                <label class="text-[11px] font-bold text-blue-400 hover:underline cursor-pointer">
+                  Upload Sign
+                  <input type="file" id="f-sig-upload" accept="image/*" class="hidden" />
+                </label>
+              </div>
+            </div>
+            <canvas id="sig-canvas" width="380" height="95" class="w-full rounded-xl border border-ui"></canvas>
+          </div>
+        </div>
+
+        <!-- TAB 7: CUSTOM SECTION -->
+        <div id="tab-custom" class="ed-panel hidden space-y-3.5">
+          <div>
+            <label class="block text-xs font-bold text-sub-ui mb-1">Custom Section Heading (Leave blank to hide)</label>
+            <input type="text" id="f-custom-title" placeholder="e.g. CERTIFICATIONS & ACHIEVEMENTS" class="w-full px-3 py-2 rounded-xl surface-input border text-sm font-bold" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-sub-ui mb-1">Points / Details (One item per line)</label>
+            <textarea id="f-custom-items" rows="6" placeholder="• RSCIT Diploma in Information Technology (88%)&#10;• Winner of District Level Typing Competition&#10;• Completed 3-Month Tally & GST Practical Training" class="w-full p-3 rounded-xl surface-input border text-sm leading-relaxed"></textarea>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- RIGHT PANE: LIVE A4 PAPER PREVIEW -->
+    <section id="preview-pane" class="hidden lg:flex w-full lg:w-[55%] xl:w-[56%] flex-col lg:h-[calc(100vh-61px)] bg-slate-900/60">
+
+      <!-- Preview Top Zoom Bar -->
+      <div id="preview-toolbar" class="surface-panel border-b px-4 py-2 flex items-center justify-between gap-2 shrink-0 flex-wrap">
+        <div class="flex items-center gap-2 text-xs font-bold text-sub-ui">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span id="active-tpl-badge" class="text-blue-400 font-extrabold">Template #1</span>
+          <span class="hidden sm:inline text-dim-ui">• A4 (210 × 297 mm)</span>
+        </div>
+
+        <div class="flex items-center gap-1.5">
+          <button type="button" class="zoom-btn px-2.5 py-1 rounded-lg surface-card border text-xs font-bold" data-zoom="fit">Auto Fit</button>
+          <button type="button" class="zoom-btn px-2.5 py-1 rounded-lg surface-card border text-xs font-bold" data-zoom="0.75">75%</button>
+          <button type="button" class="zoom-btn px-2.5 py-1 rounded-lg surface-card border text-xs font-bold" data-zoom="1">100%</button>
+        </div>
+      </div>
+
+      <!-- A4 Sheet Scrollable Stage -->
+      <div id="a4-viewport-wrapper" class="flex-1">
+        <div id="a4-scale-box">
+          <div id="resume-sheet" class="font-resume-inter"></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- MOBILE STICKY BOTTOM BAR -->
+  <nav id="mobile-bottom-bar" class="lg:hidden fixed bottom-0 inset-x-0 z-40 surface-panel border-t px-3 py-2 grid grid-cols-3 gap-2 shadow-2xl">
+    <button type="button" id="mob-tab-edit" class="py-2.5 rounded-xl bg-blue-600 text-white text-xs font-extrabold flex items-center justify-center gap-1.5">
+      <i class="fa-solid fa-pen-to-square"></i> Edit Details
+    </button>
+    <button type="button" id="mob-tab-preview" class="py-2.5 rounded-xl surface-card border text-xs font-extrabold flex items-center justify-center gap-1.5">
+      <i class="fa-solid fa-eye text-indigo-400"></i> A4 Preview
+    </button>
+    <button type="button" id="mob-btn-pdf" class="py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-extrabold flex items-center justify-center gap-1.5 shadow">
+      <i class="fa-solid fa-file-pdf"></i> Save PDF
+    </button>
+  </nav>
+
+  <!-- ========================================================================
+       MODAL: 120 TEMPLATES VISUAL GALLERY PICKER
+       ======================================================================== -->
+  <div id="template-gallery-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-2 sm:p-5">
+    <div class="surface-panel border w-full max-w-5xl max-h-[92vh] rounded-2xl p-4 sm:p-6 flex flex-col gap-3.5 shadow-2xl">
+      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-ui pb-3">
+        <div>
+          <h3 class="text-base sm:text-lg font-extrabold flex items-center gap-2">
+            <i class="fa-solid fa-swatchbook text-violet-400"></i>
+            <span>Choose From 120 Unique Resume & Biodata Templates</span>
+          </h3>
+          <p class="text-xs text-sub-ui">Filter by category or search style (Sidebar, Banner, Biodata, ATS, Tech, Academic, Split, Grid).</p>
+        </div>
+        <button type="button" id="btn-close-gallery" class="w-9 h-9 rounded-xl surface-card border text-sm font-bold hover:border-red-500">✕</button>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <input type="text" id="gallery-search-input" placeholder="Search 120 templates (e.g. Sidebar, Navy, Biodata, Minimal, Gold, Tech, Fresher)..." class="flex-1 min-w-[200px] px-3.5 py-2 rounded-xl surface-input border text-xs font-semibold" />
+        <select id="gallery-cat-select" class="px-3 py-2 rounded-xl surface-input border text-xs font-bold">
+          <option value="ALL">All 120 Designs</option>
+          <option value="Executive">Modern Executive (15)</option>
+          <option value="Sidebar">Creative Left Sidebar (15)</option>
+          <option value="RightSidebar">Right Sidebar Compact (15)</option>
+          <option value="Banner">Corporate Banner Header (15)</option>
+          <option value="Biodata">Indian Job Biodata (15)</option>
+          <option value="ATS">Classic ATS Standard (15)</option>
+          <option value="Tech">Tech & Developer Pro (15)</option>
+          <option value="Academic">Elegant Academic & Fresher (15)</option>
+        </select>
+      </div>
+
+      <div id="gallery-grid" class="flex-1 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 pr-1"></div>
+    </div>
+  </div>
+
+  <!-- MODAL: COPY STANDALONE HTML CODE -->
+  <div id="code-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="surface-panel border w-full sm:max-w-3xl max-h-[92vh] rounded-t-2xl sm:rounded-2xl p-4 sm:p-6 flex flex-col gap-3 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-ui pb-2.5">
+        <div>
+          <h3 class="text-base font-bold">📋 SOLU DIGITAL RESUME BUILDER (120 Templates) — Full HTML Code</h3>
+          <p class="text-xs text-sub-ui">100% standalone single-file HTML/CSS/JS. Copy or download for permanent offline use.</p>
+        </div>
+        <button type="button" id="btn-close-code" class="w-9 h-9 rounded-xl surface-card border text-sm font-bold">✕</button>
+      </div>
+      <textarea id="source-code-box" rows="11" readonly class="w-full flex-1 p-3 rounded-xl surface-input border text-xs font-mono text-emerald-400 focus:outline-none"></textarea>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        <button type="button" id="btn-download-html" class="py-2.5 rounded-xl surface-card border hover:border-blue-500 text-xs sm:text-sm font-bold">
+          ⬇️ Download index.html
+        </button>
+        <button type="button" id="btn-copy-html" class="py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-bold shadow">
+          📋 Copy Full Source Code
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- ========================================================================
+       JAVASCRIPT RESUME ENGINE (120 UNIQUE TEMPLATES + LOCALSTORAGE + PRINT)
+       ======================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      const STORAGE_KEY = 'solu_digital_resume_builder_120_v1';
+
+      /* ----------------------------------------------------------------------
+         120 DISTINCT, UNIQUE PROFESSIONAL RESUME & BIODATA TEMPLATES
+         8 Architectural Families x 15 Unique Structural & Visual Variants = 120
+         ---------------------------------------------------------------------- */
+      const TEMPLATE_SPECS = [
+        // === FAMILY 1: MODERN EXECUTIVE (1 - 15) ===
+        { id: 'tpl-001', cat: 'Executive', name: '1. Modern Executive Classic', arch: 'single', header: 'underline', heading: 'bar-bottom', skillStyle: 'pill', cardStyle: 'clean', density: 'normal' },
+        { id: 'tpl-002', cat: 'Executive', name: '2. Executive Left Accent Bar', arch: 'single', header: 'left-bar', heading: 'left-tick', skillStyle: 'outline', cardStyle: 'clean', density: 'normal' },
+        { id: 'tpl-003', cat: 'Executive', name: '3. Director Double Rule', arch: 'single', header: 'double-line', heading: 'double-bottom', skillStyle: 'tag', cardStyle: 'clean', density: 'normal' },
+        { id: 'tpl-004', cat: 'Executive', name: '4. Management Soft Tint Box', arch: 'single', header: 'tinted-card', heading: 'shaded-bar', skillStyle: 'pill', cardStyle: 'tinted', density: 'normal' },
+        { id: 'tpl-005', cat: 'Executive', name: '5. Corporate Split Contact', arch: 'single', header: 'split-row', heading: 'accent-cap', skillStyle: 'dot-list', cardStyle: 'clean', density: 'normal' },
+        { id: 'tpl-006', cat: 'Executive', name: '6. Boardroom Minimalist', arch: 'single', header: 'clean-minimal', heading: 'thin-line', skillStyle: 'inline-sep', cardStyle: 'clean', density: 'airy' },
+        { id: 'tpl-007', cat: 'Executive', name: '7. Senior VP Top Stripe', arch: 'single', header: 'top-stripe', heading: 'bar-bottom', skillStyle: 'pill', cardStyle: 'left-border', density: 'normal' },
+        { id: 'tpl-008', cat: 'Executive', name: '8. Operations Two-Col Grid', arch: 'two-col-body', header: 'underline', heading: 'shaded-bar', skillStyle: 'tag', cardStyle: 'clean', density: 'normal' },
+        { id: 'tpl-009', cat: 'Executive', name: '9. Consultant Timeline Flow', arch: 'single', header: 'left-bar', heading: 'pill-badge', skillStyle: 'pill', cardStyle: 'timeline', density: 'normal' },
+        { id: 'tpl-010', cat: 'Executive', name: '10. Strategy Framed Header', arch: 'single', header: 'outlined-box', heading: 'left-tick', skillStyle: 'outline', cardStyle: 'clean', density: 'normal' },
+        { id: 'tpl-011', cat: 'Executive', name: '11. Finance & Audit Crisp', arch: 'single', header: 'split-row', heading: 'double-bottom', skillStyle: 'grid-2', cardStyle: 'clean', density: 'compact' },
+        { id: 'tpl-012', cat: 'Executive', name: '12. HR & Admin Structured', arch: 'two-col-body', header: 'tinted-card', heading: 'bar-bottom', skillStyle: 'pill', cardStyle: 'tinted', density: 'normal' },
+        { id: 'tpl-013', cat: 'Executive', name: '13. Enterprise Uppercase Pro', arch: 'single', header: 'center-rule', heading: 'center-line', skillStyle: 'tag', cardStyle: 'clean', density: 'normal' },
+        { id: 'tpl-014', cat: 'Executive', name: '14. Metro Compact Executive', arch: 'single', header: 'top-stripe', heading: 'shaded-bar', skillStyle: 'outline', cardStyle: 'left-border', density: 'compact' },
+        { id: 'tpl-015', cat: 'Executive', name: '15. Apex Modern Split', arch: 'two-col-body', header: 'left-bar', heading: 'pill-badge', skillStyle: 'pill', cardStyle: 'clean', density: 'normal' },
+
+        // === FAMILY 2: CREATIVE LEFT SIDEBAR (16 - 30) ===
+        { id: 'tpl-016', cat: 'Sidebar', name: '16. Solid Accent Left Sidebar', arch: 'left-sidebar', sideTone: 'solid', sideWidth: '34%', heading: 'bar-bottom', skillStyle: 'side-list', cardStyle: 'clean' },
+        { id: 'tpl-017', cat: 'Sidebar', name: '17. Dark Slate Left Sidebar', arch: 'left-sidebar', sideTone: 'dark', sideWidth: '33%', heading: 'left-tick', skillStyle: 'side-pills', cardStyle: 'clean' },
+        { id: 'tpl-018', cat: 'Sidebar', name: '18. Soft Tint Left Column', arch: 'left-sidebar', sideTone: 'tint', sideWidth: '34%', heading: 'shaded-bar', skillStyle: 'side-bars', cardStyle: 'clean' },
+        { id: 'tpl-019', cat: 'Sidebar', name: '19. Wide 38% Portfolio Sidebar', arch: 'left-sidebar', sideTone: 'solid', sideWidth: '38%', heading: 'pill-badge', skillStyle: 'side-pills', cardStyle: 'tinted' },
+        { id: 'tpl-020', cat: 'Sidebar', name: '20. Slim 29% Nordic Sidebar', arch: 'left-sidebar', sideTone: 'tint', sideWidth: '29%', heading: 'thin-line', skillStyle: 'side-list', cardStyle: 'clean' },
+        { id: 'tpl-021', cat: 'Sidebar', name: '21. Dark Charcoal + Accent Line', arch: 'left-sidebar', sideTone: 'dark', sideWidth: '35%', heading: 'bar-bottom', skillStyle: 'side-bars', cardStyle: 'left-border' },
+        { id: 'tpl-022', cat: 'Sidebar', name: '22. Gradient Left Panel Pro', arch: 'left-sidebar', sideTone: 'gradient', sideWidth: '34%', heading: 'left-tick', skillStyle: 'side-pills', cardStyle: 'clean' },
+        { id: 'tpl-023', cat: 'Sidebar', name: '23. Bordered Left Rail Clean', arch: 'left-sidebar', sideTone: 'white-border', sideWidth: '33%', heading: 'shaded-bar', skillStyle: 'side-list', cardStyle: 'clean' },
+        { id: 'tpl-024', cat: 'Sidebar', name: '24. Studio Timeline Left Rail', arch: 'left-sidebar', sideTone: 'solid', sideWidth: '34%', heading: 'bar-bottom', skillStyle: 'side-pills', cardStyle: 'timeline' },
+        { id: 'tpl-025', cat: 'Sidebar', name: '25. Soft Ivory Left Column', arch: 'left-sidebar', sideTone: 'warm', sideWidth: '34%', heading: 'double-bottom', skillStyle: 'side-list', cardStyle: 'clean' },
+        { id: 'tpl-026', cat: 'Sidebar', name: '26. Midnight Executive Sidebar', arch: 'left-sidebar', sideTone: 'dark', sideWidth: '36%', heading: 'pill-badge', skillStyle: 'side-pills', cardStyle: 'tinted' },
+        { id: 'tpl-027', cat: 'Sidebar', name: '27. Diagonal Accent Sidebar', arch: 'left-sidebar', sideTone: 'gradient', sideWidth: '33%', heading: 'bar-bottom', skillStyle: 'side-bars', cardStyle: 'clean' },
+        { id: 'tpl-028', cat: 'Sidebar', name: '28. Minimal Light Grey Rail', arch: 'left-sidebar', sideTone: 'light-grey', sideWidth: '32%', heading: 'left-tick', skillStyle: 'side-pills', cardStyle: 'clean' },
+        { id: 'tpl-029', cat: 'Sidebar', name: '29. Creative Carded Left Rail', arch: 'left-sidebar', sideTone: 'solid', sideWidth: '35%', heading: 'shaded-bar', skillStyle: 'side-list', cardStyle: 'left-border' },
+        { id: 'tpl-030', cat: 'Sidebar', name: '30. Dual-Tone Modern Sidebar', arch: 'left-sidebar', sideTone: 'white-border', sideWidth: '35%', heading: 'pill-badge', skillStyle: 'side-pills', cardStyle: 'timeline' },
+
+        // === FAMILY 3: RIGHT SIDEBAR COMPACT (31 - 45) ===
+        { id: 'tpl-031', cat: 'RightSidebar', name: '31. Right Sidebar Carded', arch: 'right-sidebar', header: 'underline', sideTone: 'light-grey', heading: 'bar-bottom', skillStyle: 'pill' },
+        { id: 'tpl-032', cat: 'RightSidebar', name: '32. Right Solid Accent Column', arch: 'right-sidebar', header: 'left-bar', sideTone: 'solid', heading: 'left-tick', skillStyle: 'side-pills' },
+        { id: 'tpl-033', cat: 'RightSidebar', name: '33. Right Dark Profile Panel', arch: 'right-sidebar', header: 'top-stripe', sideTone: 'dark', heading: 'shaded-bar', skillStyle: 'side-pills' },
+        { id: 'tpl-034', cat: 'RightSidebar', name: '34. Right Soft Tint Column', arch: 'right-sidebar', header: 'split-row', sideTone: 'tint', heading: 'bar-bottom', skillStyle: 'tag' },
+        { id: 'tpl-035', cat: 'RightSidebar', name: '35. Right Full-Height Rail', arch: 'right-full', sideTone: 'tint', heading: 'left-tick', skillStyle: 'pill' },
+        { id: 'tpl-036', cat: 'RightSidebar', name: '36. Right Full-Height Dark', arch: 'right-full', sideTone: 'dark', heading: 'bar-bottom', skillStyle: 'side-pills' },
+        { id: 'tpl-037', cat: 'RightSidebar', name: '37. Right Full-Height Accent', arch: 'right-full', sideTone: 'solid', heading: 'pill-badge', skillStyle: 'side-list' },
+        { id: 'tpl-038', cat: 'RightSidebar', name: '38. Asymmetric 70/30 Right', arch: 'right-sidebar', header: 'clean-minimal', sideTone: 'light-grey', heading: 'thin-line', skillStyle: 'outline' },
+        { id: 'tpl-039', cat: 'RightSidebar', name: '39. Editorial Right Summary', arch: 'right-sidebar', header: 'double-line', sideTone: 'warm', heading: 'double-bottom', skillStyle: 'tag' },
+        { id: 'tpl-040', cat: 'RightSidebar', name: '40. Bordered Right Box Pro', arch: 'right-sidebar', header: 'outlined-box', sideTone: 'white-border', heading: 'shaded-bar', skillStyle: 'pill' },
+        { id: 'tpl-041', cat: 'RightSidebar', name: '41. Gradient Right Panel', arch: 'right-full', sideTone: 'gradient', heading: 'left-tick', skillStyle: 'side-pills' },
+        { id: 'tpl-042', cat: 'RightSidebar', name: '42. Right Timeline + Sidebar', arch: 'right-sidebar', header: 'underline', sideTone: 'tint', heading: 'bar-bottom', skillStyle: 'pill', cardStyle: 'timeline' },
+        { id: 'tpl-043', cat: 'RightSidebar', name: '43. Compact Right Info Deck', arch: 'right-sidebar', header: 'tinted-card', sideTone: 'light-grey', heading: 'pill-badge', skillStyle: 'outline' },
+        { id: 'tpl-044', cat: 'RightSidebar', name: '44. Swiss Right Column', arch: 'right-full', sideTone: 'light-grey', heading: 'bar-bottom', skillStyle: 'tag' },
+        { id: 'tpl-045', cat: 'RightSidebar', name: '45. Dual-Card Right Layout', arch: 'right-sidebar', header: 'left-bar', sideTone: 'white-border', heading: 'shaded-bar', skillStyle: 'pill' },
+
+        // === FAMILY 4: CORPORATE BANNER HEADER (46 - 60) ===
+        { id: 'tpl-046', cat: 'Banner', name: '46. Full Solid Corporate Banner', arch: 'banner', bannerTone: 'solid', heading: 'bar-bottom', skillStyle: 'pill', bodyCols: 1 },
+        { id: 'tpl-047', cat: 'Banner', name: '47. Dark Executive Banner', arch: 'banner', bannerTone: 'dark', heading: 'left-tick', skillStyle: 'tag', bodyCols: 1 },
+        { id: 'tpl-048', cat: 'Banner', name: '48. Gradient Hero Header', arch: 'banner', bannerTone: 'gradient', heading: 'shaded-bar', skillStyle: 'pill', bodyCols: 1 },
+        { id: 'tpl-049', cat: 'Banner', name: '49. Banner + 2-Column Body', arch: 'banner', bannerTone: 'solid', heading: 'bar-bottom', skillStyle: 'outline', bodyCols: 2 },
+        { id: 'tpl-050', cat: 'Banner', name: '50. Dark Banner + 2-Col Split', arch: 'banner', bannerTone: 'dark', heading: 'pill-badge', skillStyle: 'pill', bodyCols: 2 },
+        { id: 'tpl-051', cat: 'Banner', name: '51. Soft Pastel Header Block', arch: 'banner', bannerTone: 'tint', heading: 'bar-bottom', skillStyle: 'tag', bodyCols: 1 },
+        { id: 'tpl-052', cat: 'Banner', name: '52. Centered Prestige Banner', arch: 'banner', bannerTone: 'solid-center', heading: 'center-line', skillStyle: 'pill', bodyCols: 1 },
+        { id: 'tpl-053', cat: 'Banner', name: '53. Floating Card Banner', arch: 'banner', bannerTone: 'floating', heading: 'left-tick', skillStyle: 'outline', bodyCols: 1 },
+        { id: 'tpl-054', cat: 'Banner', name: '54. Gradient + Two-Col Grid', arch: 'banner', bannerTone: 'gradient', heading: 'shaded-bar', skillStyle: 'pill', bodyCols: 2 },
+        { id: 'tpl-055', cat: 'Banner', name: '55. Bottom-Border Hero Strip', arch: 'banner', bannerTone: 'tint-border', heading: 'double-bottom', skillStyle: 'tag', bodyCols: 1 },
+        { id: 'tpl-056', cat: 'Banner', name: '56. Dark Slate Centered Hero', arch: 'banner', bannerTone: 'dark-center', heading: 'bar-bottom', skillStyle: 'pill', bodyCols: 1 },
+        { id: 'tpl-057', cat: 'Banner', name: '57. Ribbon Contact Bar Banner', arch: 'banner', bannerTone: 'ribbon', heading: 'left-tick', skillStyle: 'outline', bodyCols: 1 },
+        { id: 'tpl-058', cat: 'Banner', name: '58. Ribbon Banner + 2-Col Body', arch: 'banner', bannerTone: 'ribbon', heading: 'shaded-bar', skillStyle: 'pill', bodyCols: 2 },
+        { id: 'tpl-059', cat: 'Banner', name: '59. Warm Cream Editorial Banner', arch: 'banner', bannerTone: 'warm', heading: 'double-bottom', skillStyle: 'tag', bodyCols: 1 },
+        { id: 'tpl-060', cat: 'Banner', name: '60. Bold Indigo Split Banner', arch: 'banner', bannerTone: 'floating', heading: 'pill-badge', skillStyle: 'pill', bodyCols: 2 },
+
+        // === FAMILY 5: INDIAN JOB BIODATA (61 - 75) ===
+        { id: 'tpl-061', cat: 'Biodata', name: '61. Classic Indian Job Biodata', arch: 'biodata', frame: 'single-solid', badge: 'BIODATA', heading: 'shaded-left' },
+        { id: 'tpl-062', cat: 'Biodata', name: '62. Double-Border Office CV', arch: 'biodata', frame: 'double-solid', badge: 'CURRICULUM VITAE', heading: 'shaded-left' },
+        { id: 'tpl-063', cat: 'Biodata', name: '63. Govt / PSU Application Form', arch: 'biodata', frame: 'single-solid', badge: 'APPLICATION BIODATA', heading: 'full-bar' },
+        { id: 'tpl-064', cat: 'Biodata', name: '64. Bank & Clerical Biodata', arch: 'biodata', frame: 'clean-outer', badge: 'RESUME / BIODATA', heading: 'bar-bottom' },
+        { id: 'tpl-065', cat: 'Biodata', name: '65. Formal Grid Biodata Sheet', arch: 'biodata', frame: 'thick-top', badge: 'PERSONAL BIODATA', heading: 'shaded-left' },
+        { id: 'tpl-066', cat: 'Biodata', name: '66. Traditional Corner Frame', arch: 'biodata', frame: 'double-solid', badge: 'BIO-DATA', heading: 'full-bar' },
+        { id: 'tpl-067', cat: 'Biodata', name: '67. Modern Indian Corporate CV', arch: 'biodata', frame: 'clean-outer', badge: 'CURRICULUM VITAE', heading: 'pill-badge' },
+        { id: 'tpl-068', cat: 'Biodata', name: '68. District / Tehsil Office Format', arch: 'biodata', frame: 'single-solid', badge: 'CANDIDATE BIODATA', heading: 'double-bottom' },
+        { id: 'tpl-069', cat: 'Biodata', name: '69. Teaching & School Biodata', arch: 'biodata', frame: 'double-solid', badge: 'FACULTY BIODATA', heading: 'shaded-left' },
+        { id: 'tpl-070', cat: 'Biodata', name: '70. Accounts & Tally Biodata', arch: 'biodata', frame: 'thick-top', badge: 'RESUME & BIODATA', heading: 'full-bar' },
+        { id: 'tpl-071', cat: 'Biodata', name: '71. Borderless Clean Biodata', arch: 'biodata', frame: 'none', badge: 'CURRICULUM VITAE', heading: 'shaded-left' },
+        { id: 'tpl-072', cat: 'Biodata', name: '72. Royal Framed Biodata Pro', arch: 'biodata', frame: 'double-solid', badge: 'OFFICIAL BIODATA', heading: 'bar-bottom' },
+        { id: 'tpl-073', cat: 'Biodata', name: '73. Compact 1-Page Biodata', arch: 'biodata', frame: 'single-solid', badge: 'BIODATA', heading: 'left-tick' },
+        { id: 'tpl-074', cat: 'Biodata', name: '74. Industrial & ITI Job Biodata', arch: 'biodata', frame: 'thick-top', badge: 'TECHNICAL BIODATA', heading: 'shaded-left' },
+        { id: 'tpl-075', cat: 'Biodata', name: '75. Executive Indian Profile', arch: 'biodata', frame: 'clean-outer', badge: 'EXECUTIVE BIODATA', heading: 'full-bar' },
+
+        // === FAMILY 6: CLASSIC ATS STANDARD (76 - 90) ===
+        { id: 'tpl-076', cat: 'ATS', name: '76. Harvard ATS Standard', arch: 'ats', align: 'center', rule: 'thin-black', skillStyle: 'inline-sep' },
+        { id: 'tpl-077', cat: 'ATS', name: '77. Wharton Left-Aligned ATS', arch: 'ats', align: 'left', rule: 'thin-black', skillStyle: 'inline-sep' },
+        { id: 'tpl-078', cat: 'ATS', name: '78. Wall Street Crisp ATS', arch: 'ats', align: 'center', rule: 'double-black', skillStyle: 'dot-list' },
+        { id: 'tpl-079', cat: 'ATS', name: '79. Silicon Valley Clean ATS', arch: 'ats', align: 'left', rule: 'accent-thin', skillStyle: 'tag' },
+        { id: 'tpl-080', cat: 'ATS', name: '80. McKinsey Structured ATS', arch: 'ats', align: 'left', rule: 'shaded-subtle', skillStyle: 'inline-sep' },
+        { id: 'tpl-081', cat: 'ATS', name: '81. Federal / MNC Parser Safe', arch: 'ats', align: 'center', rule: 'thin-black', skillStyle: 'grid-2' },
+        { id: 'tpl-082', cat: 'ATS', name: '82. Minimal Text-Only ATS', arch: 'ats', align: 'left', rule: 'none', skillStyle: 'inline-sep' },
+        { id: 'tpl-083', cat: 'ATS', name: '83. Banking & Legal ATS Pro', arch: 'ats', align: 'center', rule: 'double-black', skillStyle: 'inline-sep' },
+        { id: 'tpl-084', cat: 'ATS', name: '84. High-Density 1-Page ATS', arch: 'ats', align: 'left', rule: 'thin-black', skillStyle: 'inline-sep', compact: true },
+        { id: 'tpl-085', cat: 'ATS', name: '85. Modern Accent-Rule ATS', arch: 'ats', align: 'left', rule: 'accent-thin', skillStyle: 'outline' },
+        { id: 'tpl-086', cat: 'ATS', name: '86. Split Header Clean ATS', arch: 'ats', align: 'split', rule: 'thin-black', skillStyle: 'inline-sep' },
+        { id: 'tpl-087', cat: 'ATS', name: '87. Deloitte Consulting ATS', arch: 'ats', align: 'left', rule: 'shaded-subtle', skillStyle: 'grid-2' },
+        { id: 'tpl-088', cat: 'ATS', name: '88. Oxford Classic ATS', arch: 'ats', align: 'center', rule: 'accent-thin', skillStyle: 'dot-list' },
+        { id: 'tpl-089', cat: 'ATS', name: '89. Recruiter Fast-Scan ATS', arch: 'ats', align: 'split', rule: 'accent-thin', skillStyle: 'tag' },
+        { id: 'tpl-090', cat: 'ATS', name: '90. Global Standard CV ATS', arch: 'ats', align: 'left', rule: 'double-black', skillStyle: 'inline-sep' },
+
+        // === FAMILY 7: TECH & DEVELOPER PRO (91 - 105) ===
+        { id: 'tpl-091', cat: 'Tech', name: '91. Full-Stack Dev Terminal', arch: 'tech', techHeader: 'dark-code', heading: 'code-tag', skillStyle: 'chip-solid' },
+        { id: 'tpl-092', cat: 'Tech', name: '92. Product Designer Grid', arch: 'tech', techHeader: 'clean-grid', heading: 'pill-badge', skillStyle: 'pill' },
+        { id: 'tpl-093', cat: 'Tech', name: '93. DevOps & Cloud Engineer', arch: 'tech', techHeader: 'dark-code', heading: 'left-tick', skillStyle: 'outline' },
+        { id: 'tpl-094', cat: 'Tech', name: '94. UI/UX Studio Portfolio', arch: 'tech', techHeader: 'gradient-soft', heading: 'shaded-bar', skillStyle: 'pill' },
+        { id: 'tpl-095', cat: 'Tech', name: '95. Data Analyst & BI Pro', arch: 'tech', techHeader: 'clean-grid', heading: 'bar-bottom', skillStyle: 'grid-2' },
+        { id: 'tpl-096', cat: 'Tech', name: '96. Cybersecurity Specialist', arch: 'tech', techHeader: 'dark-code', heading: 'shaded-bar', skillStyle: 'chip-solid' },
+        { id: 'tpl-097', cat: 'Tech', name: '97. Startup Founder & Growth', arch: 'tech', techHeader: 'gradient-soft', heading: 'pill-badge', skillStyle: 'tag' },
+        { id: 'tpl-098', cat: 'Tech', name: '98. Mobile App Dev Compact', arch: 'tech', techHeader: 'left-accent', heading: 'code-tag', skillStyle: 'pill' },
+        { id: 'tpl-099', cat: 'Tech', name: '99. AI & ML Engineer Sheet', arch: 'tech', techHeader: 'clean-grid', heading: 'code-tag', skillStyle: 'outline' },
+        { id: 'tpl-100', cat: 'Tech', name: '100. GitHub Style Readme CV', arch: 'tech', techHeader: 'github-box', heading: 'bar-bottom', skillStyle: 'tag' },
+        { id: 'tpl-101', cat: 'Tech', name: '101. SaaS Product Manager', arch: 'tech', techHeader: 'gradient-soft', heading: 'left-tick', skillStyle: 'pill' },
+        { id: 'tpl-102', cat: 'Tech', name: '102. Systems Architect Dual', arch: 'tech', techHeader: 'left-accent', heading: 'shaded-bar', skillStyle: 'chip-solid' },
+        { id: 'tpl-103', cat: 'Tech', name: '103. Digital Marketer & SEO', arch: 'tech', techHeader: 'gradient-soft', heading: 'bar-bottom', skillStyle: 'pill' },
+        { id: 'tpl-104', cat: 'Tech', name: '104. QA & Automation Pro', arch: 'tech', techHeader: 'github-box', heading: 'left-tick', skillStyle: 'outline' },
+        { id: 'tpl-105', cat: 'Tech', name: '105. Modern Tech Two-Col', arch: 'two-col-body', header: 'tinted-card', heading: 'pill-badge', skillStyle: 'pill', cardStyle: 'left-border' },
+
+        // === FAMILY 8: ELEGANT ACADEMIC & FRESHER (106 - 120) ===
+        { id: 'tpl-106', cat: 'Academic', name: '106. Fresher Education-First', arch: 'fresher', header: 'underline', heading: 'bar-bottom', skillStyle: 'pill' },
+        { id: 'tpl-107', cat: 'Academic', name: '107. Campus Placement Pro', arch: 'fresher', header: 'tinted-card', heading: 'shaded-bar', skillStyle: 'tag' },
+        { id: 'tpl-108', cat: 'Academic', name: '108. Graduate Trainee Clean', arch: 'fresher', header: 'left-bar', heading: 'left-tick', skillStyle: 'pill' },
+        { id: 'tpl-109', cat: 'Academic', name: '109. University Scholar Serif', arch: 'fresher', header: 'double-line', heading: 'double-bottom', skillStyle: 'inline-sep' },
+        { id: 'tpl-110', cat: 'Academic', name: '110. Engineering Fresher Grid', arch: 'fresher', header: 'split-row', heading: 'pill-badge', skillStyle: 'outline' },
+        { id: 'tpl-111', cat: 'Academic', name: '111. Commerce & B.Com Fresher', arch: 'fresher', header: 'top-stripe', heading: 'bar-bottom', skillStyle: 'tag' },
+        { id: 'tpl-112', cat: 'Academic', name: '112. Internship & Skills Focus', arch: 'fresher', header: 'left-bar', heading: 'shaded-bar', skillStyle: 'pill' },
+        { id: 'tpl-113', cat: 'Academic', name: '113. Professor & Lecturer CV', arch: 'fresher', header: 'center-rule', heading: 'center-line', skillStyle: 'dot-list' },
+        { id: 'tpl-114', cat: 'Academic', name: '114. Diploma & ITI Fresher', arch: 'fresher', header: 'outlined-box', heading: 'shaded-bar', skillStyle: 'pill' },
+        { id: 'tpl-115', cat: 'Academic', name: '115. Medical & Nursing CV', arch: 'fresher', header: 'top-stripe', heading: 'left-tick', skillStyle: 'outline' },
+        { id: 'tpl-116', cat: 'Academic', name: '116. Research Fellow Classic', arch: 'fresher', header: 'double-line', heading: 'thin-line', skillStyle: 'inline-sep' },
+        { id: 'tpl-117', cat: 'Academic', name: '117. Entry-Level Office Fresher', arch: 'fresher', header: 'tinted-card', heading: 'bar-bottom', skillStyle: 'pill' },
+        { id: 'tpl-118', cat: 'Academic', name: '118. MBA & Management Trainee', arch: 'fresher', header: 'split-row', heading: 'double-bottom', skillStyle: 'tag' },
+        { id: 'tpl-119', cat: 'Academic', name: '119. High-School / 12th Pass CV', arch: 'fresher', header: 'underline', heading: 'shaded-bar', skillStyle: 'pill' },
+        { id: 'tpl-120', cat: 'Academic', name: '120. Prestige Academic Gold', arch: 'fresher', header: 'center-rule', heading: 'double-bottom', skillStyle: 'outline' }
+      ];
+
+      /* ----------------------------------------------------------------------
+         READY-MADE CAREER OBJECTIVES
+         ---------------------------------------------------------------------- */
+      const OBJECTIVE_PRESETS = {
+        fresher: 'To obtain an entry-level position in a reputed organization where I can utilize my academic knowledge, computer proficiency, and strong work ethic to contribute to organizational growth while enhancing my professional skills.',
+        office: 'Dedicated and detail-oriented Computer Operator & Office Assistant seeking a challenging role where my expertise in MS Office, data entry, documentation, and back-office administration can streamline daily operations.',
+        sales: 'Result-driven and enthusiastic Sales & Marketing Executive aiming to leverage strong communication, customer relationship management, and negotiation skills to achieve business targets and drive revenue growth.',
+        account: 'Accurate and analytical Accounts Executive skilled in Tally Prime, GST billing, ledger maintenance, and financial reporting, seeking to contribute financial precision to a progressive company.',
+        teacher: 'Passionate and patient Educator committed to fostering an engaging learning environment, simplifying complex concepts, and nurturing students’ academic and moral development.',
+        it: 'Motivated IT & Web Professional with hands-on experience in modern web technologies, troubleshooting, and digital solutions, looking to build reliable and user-friendly applications.',
+        customer: 'Polite and solution-focused Customer Service Representative dedicated to resolving client queries efficiently, maintaining high satisfaction scores, and representing the brand professionally.',
+        general: 'Hardworking and adaptable professional with strong organizational, problem-solving, and interpersonal abilities, eager to add immediate value to a dynamic team.'
+      };
+
+      function getDefaultData() {
+        return {
+          template: 'tpl-001',
+          accent: '#1e3a8a',
+          font: 'font-resume-inter',
+          name: 'RAHUL KUMAR SHARMA',
+          role: 'Computer Operator & Office Executive',
+          phone: '+91 98765 43210',
+          email: 'rahul.sharma@email.com',
+          address: 'Ward No. 14, Station Road, Jaipur, Rajasthan - 302001',
+          link: 'linkedin.com/in/rahul-sharma',
+          photo: '',
+          photoShape: 'rounded',
+          objective: OBJECTIVE_PRESETS.office,
+          eduStyle: 'table',
+          education: [
+            { degree: 'Bachelor of Arts (B.A.)', institute: 'University of Rajasthan, Jaipur', year: '2023', score: '68.5%' },
+            { degree: 'Senior Secondary (12th)', institute: 'RBSE Board, Ajmer', year: '2020', score: '74.2%' },
+            { degree: 'Secondary (10th)', institute: 'RBSE Board, Ajmer', year: '2018', score: '78.0%' }
+          ],
+          experience: [
+            {
+              title: 'Back Office & Computer Operator',
+              company: 'Shree Balaji Digital & E-Mitra Kendra',
+              duration: '2023 – Present',
+              desc: 'Managed online government portal applications, PAN/Passport documentation, MS Excel data reporting, and daily customer assistance.'
+            }
+          ],
+          skills: [
+            'MS Office (Word, Excel, PowerPoint)',
+            'Hindi & English Typing (35+ WPM)',
+            'Tally Prime & Basic GST',
+            'Online Form & Documentation',
+            'Customer Communication'
+          ],
+          showPersonal: true,
+          father: 'Shri Rajesh Kumar Sharma',
+          mother: 'Smt. Sunita Sharma',
+          dob: '15 August 2002',
+          gender: 'Male',
+          marital: 'Unmarried',
+          nationality: 'Indian',
+          languages: 'Hindi, English',
+          hobbies: 'Reading, Learning Digital Tools',
+          showDeclaration: true,
+          declaration: 'I hereby declare that all the information furnished above is true, complete, and correct to the best of my knowledge and belief.',
+          place: 'Jaipur',
+          date: new Date().toLocaleDateString('en-GB'),
+          signature: '',
+          customTitle: 'CERTIFICATIONS & DIPLOMAS',
+          customItems: '• RS-CIT Certificate in Information Technology (VMOU Kota — 86%)\n• Certificate in Financial Accounting with Tally Prime'
+        };
+      }
+
+      let resumeData = loadSavedData();
+      let currentZoom = 'fit';
+      let currentCatFilter = 'ALL';
+
+      function loadSavedData() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            const merged = { ...getDefaultData(), ...parsed };
+            if (!TEMPLATE_SPECS.some((t) => t.id === merged.template)) {
+              merged.template = 'tpl-001';
+            }
+            return merged;
+          }
+        } catch (e) {}
+        return getDefaultData();
+      }
+
+      function saveData() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(resumeData));
+        } catch (e) {}
+      }
+
+      function showToast(msg) {
+        const box = document.getElementById('toast-container');
+        const el = document.createElement('div');
+        el.className = 'toast-item';
+        el.textContent = msg;
+        box.appendChild(el);
+        setTimeout(() => {
+          el.style.opacity = '0';
+          el.style.transition = 'opacity 0.2s ease';
+          setTimeout(() => el.remove(), 220);
+        }, 2500);
+      }
+
+      function escapeHtml(str) {
+        return String(str || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function getActiveSpec() {
+        return TEMPLATE_SPECS.find((t) => t.id === resumeData.template) || TEMPLATE_SPECS[0];
+      }
+
+      /* ----------------------------------------------------------------------
+         UI THEME TOGGLE & MOBILE VIEW SWITCHER
+         ---------------------------------------------------------------------- */
+      document.getElementById('btn-theme-toggle').addEventListener('click', () => {
+        const html = document.documentElement;
+        const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        document.getElementById('ui-theme-icon').className =
+          next === 'dark' ? 'fa-solid fa-sun text-amber-400 text-sm' : 'fa-solid fa-moon text-blue-600 text-sm';
+      });
+
+      const editorPane = document.getElementById('editor-pane');
+      const previewPane = document.getElementById('preview-pane');
+      const mobTabEdit = document.getElementById('mob-tab-edit');
+      const mobTabPreview = document.getElementById('mob-tab-preview');
+
+      mobTabEdit.addEventListener('click', () => {
+        editorPane.classList.remove('hidden');
+        previewPane.classList.add('hidden');
+        previewPane.classList.remove('flex');
+        mobTabEdit.className = 'py-2.5 rounded-xl bg-blue-600 text-white text-xs font-extrabold flex items-center justify-center gap-1.5';
+        mobTabPreview.className = 'py-2.5 rounded-xl surface-card border text-xs font-extrabold flex items-center justify-center gap-1.5';
+      });
+
+      mobTabPreview.addEventListener('click', () => {
+        editorPane.classList.add('hidden');
+        previewPane.classList.remove('hidden');
+        previewPane.classList.add('flex');
+        mobTabPreview.className = 'py-2.5 rounded-xl bg-blue-600 text-white text-xs font-extrabold flex items-center justify-center gap-1.5';
+        mobTabEdit.className = 'py-2.5 rounded-xl surface-card border text-xs font-extrabold flex items-center justify-center gap-1.5';
+        applyA4Zoom();
+      });
+
+      /* ----------------------------------------------------------------------
+         120 TEMPLATES SELECTOR, NEXT/PREV, DROPDOWN & VISUAL GALLERY MODAL
+         ---------------------------------------------------------------------- */
+      const templatePillsBox = document.getElementById('template-pills');
+      const tplQuickSelect = document.getElementById('tpl-quick-select');
+      const tplCatFilter = document.getElementById('tpl-category-filter');
+
+      function getFilteredTemplates() {
+        if (currentCatFilter === 'ALL') return TEMPLATE_SPECS;
+        return TEMPLATE_SPECS.filter((t) => t.cat === currentCatFilter);
+      }
+
+      function selectTemplateById(id) {
+        resumeData.template = id;
+        saveData();
+        renderTemplateControls();
+        renderResume();
+        const spec = getActiveSpec();
+        document.getElementById('active-tpl-badge').textContent = spec.name;
+      }
+
+      function renderTemplateControls() {
+        const list = getFilteredTemplates();
+        templatePillsBox.innerHTML = '';
+        tplQuickSelect.innerHTML = '';
+
+        list.forEach((tpl) => {
+          const isActive = resumeData.template === tpl.id;
+
+          // Dropdown Option
+          const opt = document.createElement('option');
+          opt.value = tpl.id;
+          opt.textContent = tpl.name;
+          if (isActive) opt.selected = true;
+          tplQuickSelect.appendChild(opt);
+
+          // Horizontal Pill
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = isActive
+            ? 'px-3 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold shrink-0 shadow'
+            : 'px-3 py-1.5 rounded-xl surface-input border hover:border-blue-500 text-xs font-bold shrink-0 transition';
+          btn.textContent = tpl.name;
+          btn.addEventListener('click', () => selectTemplateById(tpl.id));
+          templatePillsBox.appendChild(btn);
+        });
+
+        const activeBtn = templatePillsBox.querySelector('.bg-gradient-to-r');
+        if (activeBtn) {
+          activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+
+        const spec = getActiveSpec();
+        document.getElementById('active-tpl-badge').textContent = spec.name;
+      }
+
+      tplCatFilter.addEventListener('change', (e) => {
+        currentCatFilter = e.target.value;
+        const list = getFilteredTemplates();
+        if (list.length && !list.some((t) => t.id === resumeData.template)) {
+          selectTemplateById(list[0].id);
+        } else {
+          renderTemplateControls();
+        }
+      });
+
+      tplQuickSelect.addEventListener('change', (e) => {
+        selectTemplateById(e.target.value);
+      });
+
+      document.getElementById('btn-prev-tpl').addEventListener('click', () => {
+        const idx = TEMPLATE_SPECS.findIndex((t) => t.id === resumeData.template);
+        const prev = (idx - 1 + TEMPLATE_SPECS.length) % TEMPLATE_SPECS.length;
+        currentCatFilter = 'ALL';
+        tplCatFilter.value = 'ALL';
+        selectTemplateById(TEMPLATE_SPECS[prev].id);
+      });
+
+      document.getElementById('btn-next-tpl').addEventListener('click', () => {
+        const idx = TEMPLATE_SPECS.findIndex((t) => t.id === resumeData.template);
+        const next = (idx + 1) % TEMPLATE_SPECS.length;
+        currentCatFilter = 'ALL';
+        tplCatFilter.value = 'ALL';
+        selectTemplateById(TEMPLATE_SPECS[next].id);
+      });
+
+      // 120 Templates Gallery Modal
+      const galleryModal = document.getElementById('template-gallery-modal');
+      const galleryGrid = document.getElementById('gallery-grid');
+      const gallerySearch = document.getElementById('gallery-search-input');
+      const galleryCat = document.getElementById('gallery-cat-select');
+
+      function getMiniWireframe(spec, a) {
+        if (spec.arch === 'left-sidebar') {
+          const bg = spec.sideTone === 'dark' ? '#1e293b' : spec.sideTone === 'tint' ? `${a}22` : a;
+          return `<div style="height:44px;border:1px solid #cbd5e1;border-radius:6px;overflow:hidden;display:flex;background:#fff;">
+            <div style="width:34%;background:${bg};"></div>
+            <div style="flex:1;padding:6px;display:flex;flex-direction:column;gap:4px;">
+              <div style="height:5px;width:65%;background:${a};border-radius:2px;"></div>
+              <div style="height:3px;width:90%;background:#cbd5e1;"></div>
+              <div style="height:3px;width:80%;background:#cbd5e1;"></div>
+            </div>
+          </div>`;
+        }
+        if (spec.arch === 'right-sidebar' || spec.arch === 'right-full') {
+          const bg = spec.sideTone === 'dark' ? '#1e293b' : spec.sideTone === 'solid' ? a : `${a}20`;
+          return `<div style="height:44px;border:1px solid #cbd5e1;border-radius:6px;overflow:hidden;display:flex;background:#fff;">
+            <div style="flex:1;padding:6px;display:flex;flex-direction:column;gap:4px;">
+              <div style="height:5px;width:65%;background:${a};border-radius:2px;"></div>
+              <div style="height:3px;width:90%;background:#cbd5e1;"></div>
+              <div style="height:3px;width:75%;background:#cbd5e1;"></div>
+            </div>
+            <div style="width:34%;background:${bg};"></div>
+          </div>`;
+        }
+        if (spec.arch === 'banner' || spec.arch === 'tech') {
+          const bg = (spec.bannerTone && spec.bannerTone.includes('dark')) || spec.techHeader === 'dark-code' ? '#0f172a' : a;
+          return `<div style="height:44px;border:1px solid #cbd5e1;border-radius:6px;overflow:hidden;background:#fff;">
+            <div style="height:15px;background:${bg};"></div>
+            <div style="padding:5px;display:flex;flex-direction:column;gap:3px;">
+              <div style="height:3px;width:85%;background:#cbd5e1;"></div>
+              <div style="height:3px;width:70%;background:#cbd5e1;"></div>
+            </div>
+          </div>`;
+        }
+        if (spec.arch === 'biodata') {
+          return `<div style="height:44px;border:2px solid ${a};border-radius:4px;padding:4px;background:#fff;display:flex;flex-direction:column;gap:3px;">
+            <div style="height:5px;width:45%;margin:0 auto;background:${a};border-radius:2px;"></div>
+            <div style="height:3px;width:90%;background:#cbd5e1;"></div>
+            <div style="height:3px;width:85%;background:#cbd5e1;"></div>
+          </div>`;
+        }
+        return `<div style="height:44px;border:1px solid #cbd5e1;border-radius:6px;padding:6px;background:#fff;display:flex;flex-direction:column;gap:4px;">
+          <div style="height:5px;width:55%;background:${spec.arch === 'ats' ? '#0f172a' : a};border-radius:2px;"></div>
+          <div style="height:2px;width:100%;background:${a};"></div>
+          <div style="height:3px;width:85%;background:#cbd5e1;"></div>
+        </div>`;
+      }
+
+      function renderGalleryGrid() {
+        const q = gallerySearch.value.trim().toLowerCase();
+        const cat = galleryCat.value;
+        galleryGrid.innerHTML = '';
+
+        const matches = TEMPLATE_SPECS.filter((t) => {
+          const okCat = cat === 'ALL' || t.cat === cat;
+          const okQ = !q || t.name.toLowerCase().includes(q) || t.cat.toLowerCase().includes(q) || t.arch.toLowerCase().includes(q);
+          return okCat && okQ;
+        });
+
+        matches.forEach((tpl) => {
+          const isSelected = resumeData.template === tpl.id;
+          const card = document.createElement('button');
+          card.type = 'button';
+          card.className = isSelected
+            ? 'text-left p-2.5 rounded-xl border-2 border-blue-500 bg-blue-600/15 transition flex flex-col gap-2'
+            : 'text-left p-2.5 rounded-xl surface-card border hover:border-blue-500 transition flex flex-col gap-2';
+          card.innerHTML = `
+            ${getMiniWireframe(tpl, resumeData.accent)}
+            <div>
+              <div class="text-xs font-extrabold truncate">${escapeHtml(tpl.name)}</div>
+              <div class="text-[10px] text-sub-ui font-semibold">${escapeHtml(tpl.cat)} Layout</div>
+            </div>
+          `;
+          card.addEventListener('click', () => {
+            currentCatFilter = 'ALL';
+            tplCatFilter.value = 'ALL';
+            selectTemplateById(tpl.id);
+            galleryModal.classList.add('hidden');
+            showToast(`✅ Applied ${tpl.name}`);
+          });
+          galleryGrid.appendChild(card);
+        });
+      }
+
+      function openGalleryModal() {
+        galleryCat.value = currentCatFilter;
+        renderGalleryGrid();
+        galleryModal.classList.remove('hidden');
+      }
+
+      document.getElementById('btn-open-gallery').addEventListener('click', openGalleryModal);
+      document.getElementById('btn-browse-all-inline').addEventListener('click', openGalleryModal);
+      document.getElementById('btn-close-gallery').addEventListener('click', () => galleryModal.classList.add('hidden'));
+      gallerySearch.addEventListener('input', renderGalleryGrid);
+      galleryCat.addEventListener('change', renderGalleryGrid);
+
+      // Color Swatches & Font
+      document.querySelectorAll('.color-dot').forEach((dot) => {
+        dot.addEventListener('click', () => {
+          document.querySelectorAll('.color-dot').forEach((d) => d.classList.replace('border-white', 'border-transparent'));
+          dot.classList.replace('border-transparent', 'border-white');
+          resumeData.accent = dot.dataset.color;
+          document.getElementById('custom-accent-color').value = resumeData.accent;
+          saveData();
+          renderResume();
+        });
+      });
+
+      document.getElementById('custom-accent-color').addEventListener('input', (e) => {
+        resumeData.accent = e.target.value;
+        saveData();
+        renderResume();
+      });
+
+      document.getElementById('resume-font-select').addEventListener('change', (e) => {
+        resumeData.font = e.target.value;
+        saveData();
+        renderResume();
+      });
+
+      // Editor Section Tabs
+      document.querySelectorAll('.ed-tab').forEach((tab) => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.ed-tab').forEach((t) => {
+            t.className = 'ed-tab px-3 py-2 rounded-xl surface-card border text-xs font-bold shrink-0';
+          });
+          tab.className = 'ed-tab active px-3 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold shrink-0';
+          document.querySelectorAll('.ed-panel').forEach((p) => p.classList.add('hidden'));
+          document.getElementById('tab-' + tab.dataset.tab).classList.remove('hidden');
+        });
+      });
+
+      /* ----------------------------------------------------------------------
+         SYNC FORM INPUTS <-> STATE
+         ---------------------------------------------------------------------- */
+      const fieldBindings = [
+        ['f-name', 'name'],
+        ['f-role', 'role'],
+        ['f-phone', 'phone'],
+        ['f-email', 'email'],
+        ['f-address', 'address'],
+        ['f-link', 'link'],
+        ['f-photo-shape', 'photoShape'],
+        ['f-objective', 'objective'],
+        ['f-edu-style', 'eduStyle'],
+        ['f-father', 'father'],
+        ['f-mother', 'mother'],
+        ['f-dob', 'dob'],
+        ['f-gender', 'gender'],
+        ['f-marital', 'marital'],
+        ['f-nationality', 'nationality'],
+        ['f-languages', 'languages'],
+        ['f-hobbies', 'hobbies'],
+        ['f-declaration', 'declaration'],
+        ['f-place', 'place'],
+        ['f-date', 'date'],
+        ['f-custom-title', 'customTitle'],
+        ['f-custom-items', 'customItems']
+      ];
+
+      function populateFormFromState() {
+        fieldBindings.forEach(([id, key]) => {
+          const el = document.getElementById(id);
+          if (el) el.value = resumeData[key] || '';
+        });
+        document.getElementById('f-show-personal').checked = !!resumeData.showPersonal;
+        document.getElementById('f-show-declaration').checked = !!resumeData.showDeclaration;
+        document.getElementById('resume-font-select').value = resumeData.font;
+        document.getElementById('custom-accent-color').value = resumeData.accent;
+
+        renderTemplateControls();
+        renderEduEditor();
+        renderExpEditor();
+        renderSkillsEditor();
+      }
+
+      fieldBindings.forEach(([id, key]) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const evt = el.tagName === 'SELECT' ? 'change' : 'input';
+        el.addEventListener(evt, () => {
+          resumeData[key] = el.value;
+          saveData();
+          renderResume();
+        });
+      });
+
+      document.getElementById('f-show-personal').addEventListener('change', (e) => {
+        resumeData.showPersonal = e.target.checked;
+        saveData();
+        renderResume();
+      });
+
+      document.getElementById('f-show-declaration').addEventListener('change', (e) => {
+        resumeData.showDeclaration = e.target.checked;
+        saveData();
+        renderResume();
+      });
+
+      document.getElementById('btn-apply-objective').addEventListener('click', () => {
+        const key = document.getElementById('objective-preset-select').value;
+        if (!key || !OBJECTIVE_PRESETS[key]) return showToast('⚠️ Choose an objective preset first.');
+        resumeData.objective = OBJECTIVE_PRESETS[key];
+        document.getElementById('f-objective').value = resumeData.objective;
+        saveData();
+        renderResume();
+        showToast('✨ Career Objective inserted!');
+      });
+
+      document.getElementById('f-photo-input').addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          resumeData.photo = ev.target.result;
+          saveData();
+          renderResume();
+          showToast('📸 Photo added to resume!');
+        };
+        reader.readAsDataURL(file);
+      });
+
+      document.getElementById('btn-remove-photo').addEventListener('click', () => {
+        resumeData.photo = '';
+        saveData();
+        renderResume();
+        showToast('Photo removed.');
+      });
+
+      /* ----------------------------------------------------------------------
+         DYNAMIC EDUCATION EDITOR
+         ---------------------------------------------------------------------- */
+      function renderEduEditor() {
+        const box = document.getElementById('edu-list-container');
+        box.innerHTML = '';
+        resumeData.education.forEach((edu, idx) => {
+          const card = document.createElement('div');
+          card.className = 'surface-card border rounded-2xl p-3 space-y-2';
+          card.innerHTML = `
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-extrabold text-blue-400">Qualification #${idx + 1}</span>
+              <div class="flex gap-1.5">
+                <button type="button" class="e-up px-2 py-1 rounded surface-input border text-[11px]" ${idx === 0 ? 'disabled opacity-40' : ''}>↑</button>
+                <button type="button" class="e-dn px-2 py-1 rounded surface-input border text-[11px]" ${idx === resumeData.education.length - 1 ? 'disabled opacity-40' : ''}>↓</button>
+                <button type="button" class="e-del px-2 py-1 rounded surface-input border text-red-400 text-[11px]">✕</button>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <input type="text" data-k="degree" value="${escapeHtml(edu.degree)}" placeholder="Degree / Class (e.g. 12th / B.A.)" class="px-2.5 py-1.5 rounded-lg surface-input border text-xs font-bold" />
+              <input type="text" data-k="institute" value="${escapeHtml(edu.institute)}" placeholder="Board / University / School" class="px-2.5 py-1.5 rounded-lg surface-input border text-xs" />
+              <input type="text" data-k="year" value="${escapeHtml(edu.year)}" placeholder="Passing Year (e.g. 2023)" class="px-2.5 py-1.5 rounded-lg surface-input border text-xs" />
+              <input type="text" data-k="score" value="${escapeHtml(edu.score)}" placeholder="Percentage / CGPA (e.g. 75%)" class="px-2.5 py-1.5 rounded-lg surface-input border text-xs" />
+            </div>
+          `;
+          card.querySelectorAll('input').forEach((inp) => {
+            inp.addEventListener('input', () => {
+              resumeData.education[idx][inp.dataset.k] = inp.value;
+              saveData();
+              renderResume();
+            });
+          });
+          card.querySelector('.e-up').addEventListener('click', () => {
+            if (idx > 0) {
+              [resumeData.education[idx - 1], resumeData.education[idx]] = [resumeData.education[idx], resumeData.education[idx - 1]];
+              saveData(); renderEduEditor(); renderResume();
+            }
+          });
+          card.querySelector('.e-dn').addEventListener('click', () => {
+            if (idx < resumeData.education.length - 1) {
+              [resumeData.education[idx + 1], resumeData.education[idx]] = [resumeData.education[idx], resumeData.education[idx + 1]];
+              saveData(); renderEduEditor(); renderResume();
+            }
+          });
+          card.querySelector('.e-del').addEventListener('click', () => {
+            resumeData.education.splice(idx, 1);
+            saveData(); renderEduEditor(); renderResume();
+          });
+          box.appendChild(card);
+        });
+      }
+
+      document.getElementById('btn-add-edu').addEventListener('click', () => {
+        resumeData.education.push({ degree: '', institute: '', year: '', score: '' });
+        saveData();
+        renderEduEditor();
+        renderResume();
+      });
+
+      /* ----------------------------------------------------------------------
+         DYNAMIC EXPERIENCE EDITOR
+         ---------------------------------------------------------------------- */
+      function renderExpEditor() {
+        const box = document.getElementById('exp-list-container');
+        box.innerHTML = '';
+        resumeData.experience.forEach((exp, idx) => {
+          const card = document.createElement('div');
+          card.className = 'surface-card border rounded-2xl p-3 space-y-2';
+          card.innerHTML = `
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-extrabold text-indigo-400">Experience #${idx + 1}</span>
+              <button type="button" class="x-del px-2 py-1 rounded surface-input border text-red-400 text-[11px]">Remove</button>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <input type="text" data-k="title" value="${escapeHtml(exp.title)}" placeholder="Job Role / Designation" class="px-2.5 py-1.5 rounded-lg surface-input border text-xs font-bold" />
+              <input type="text" data-k="company" value="${escapeHtml(exp.company)}" placeholder="Company / Shop / Organization" class="px-2.5 py-1.5 rounded-lg surface-input border text-xs" />
+              <input type="text" data-k="duration" value="${escapeHtml(exp.duration)}" placeholder="Duration (e.g. 2022 - 2024)" class="sm:col-span-2 px-2.5 py-1.5 rounded-lg surface-input border text-xs" />
+              <textarea data-k="desc" rows="2" placeholder="Key work responsibilities..." class="sm:col-span-2 p-2 rounded-lg surface-input border text-xs">${escapeHtml(exp.desc)}</textarea>
+            </div>
+          `;
+          card.querySelectorAll('input, textarea').forEach((inp) => {
+            inp.addEventListener('input', () => {
+              resumeData.experience[idx][inp.dataset.k] = inp.value;
+              saveData();
+              renderResume();
+            });
+          });
+          card.querySelector('.x-del').addEventListener('click', () => {
+            resumeData.experience.splice(idx, 1);
+            saveData(); renderExpEditor(); renderResume();
+          });
+          box.appendChild(card);
+        });
+      }
+
+      document.getElementById('btn-add-exp').addEventListener('click', () => {
+        resumeData.experience.push({ title: '', company: '', duration: '', desc: '' });
+        saveData();
+        renderExpEditor();
+        renderResume();
+      });
+
+      /* ----------------------------------------------------------------------
+         DYNAMIC SKILLS EDITOR
+         ---------------------------------------------------------------------- */
+      function renderSkillsEditor() {
+        const list = document.getElementById('active-skills-list');
+        list.innerHTML = '';
+        resumeData.skills.forEach((skill, idx) => {
+          const pill = document.createElement('span');
+          pill.className = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600/20 border border-blue-500/40 text-xs font-bold';
+          pill.innerHTML = `${escapeHtml(skill)} <button type="button" class="text-red-400 hover:text-red-300 font-extrabold">×</button>`;
+          pill.querySelector('button').addEventListener('click', () => {
+            resumeData.skills.splice(idx, 1);
+            saveData(); renderSkillsEditor(); renderResume();
+          });
+          list.appendChild(pill);
+        });
+      }
+
+      function addSkillItem(text) {
+        const clean = text.replace(/^\+\s*/, '').trim();
+        if (!clean) return;
+        if (!resumeData.skills.includes(clean)) {
+          resumeData.skills.push(clean);
+          saveData();
+          renderSkillsEditor();
+          renderResume();
+        }
+      }
+
+      document.getElementById('btn-add-skill').addEventListener('click', () => {
+        const inp = document.getElementById('skill-input');
+        addSkillItem(inp.value);
+        inp.value = '';
+      });
+      document.getElementById('skill-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          addSkillItem(e.target.value);
+          e.target.value = '';
+        }
+      });
+      document.querySelectorAll('.skill-chip').forEach((chip) => {
+        chip.addEventListener('click', () => addSkillItem(chip.textContent));
+      });
+
+      /* ----------------------------------------------------------------------
+         TOUCH & MOUSE SIGNATURE PAD
+         ---------------------------------------------------------------------- */
+      const sigCanvas = document.getElementById('sig-canvas');
+      const sigCtx = sigCanvas.getContext('2d');
+      let drawingSig = false;
+
+      function getSigCoords(e) {
+        const r = sigCanvas.getBoundingClientRect();
+        const cx = e.touches ? e.touches[0].clientX : e.clientX;
+        const cy = e.touches ? e.touches[0].clientY : e.clientY;
+        return {
+          x: ((cx - r.left) / r.width) * sigCanvas.width,
+          y: ((cy - r.top) / r.height) * sigCanvas.height
+        };
+      }
+
+      sigCanvas.addEventListener('mousedown', (e) => {
+        drawingSig = true;
+        const p = getSigCoords(e);
+        sigCtx.beginPath();
+        sigCtx.moveTo(p.x, p.y);
+      });
+      sigCanvas.addEventListener('mousemove', (e) => {
+        if (!drawingSig) return;
+        const p = getSigCoords(e);
+        sigCtx.strokeStyle = '#0f172a';
+        sigCtx.lineWidth = 2.6;
+        sigCtx.lineCap = 'round';
+        sigCtx.lineTo(p.x, p.y);
+        sigCtx.stroke();
+      });
+      window.addEventListener('mouseup', () => {
+        if (drawingSig) {
+          drawingSig = false;
+          resumeData.signature = sigCanvas.toDataURL('image/png');
+          saveData();
+          renderResume();
+        }
+      });
+
+      sigCanvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        drawingSig = true;
+        const p = getSigCoords(e);
+        sigCtx.beginPath();
+        sigCtx.moveTo(p.x, p.y);
+      }, { passive: false });
+      sigCanvas.addEventListener('touchmove', (e) => {
+        if (!drawingSig) return;
+        e.preventDefault();
+        const p = getSigCoords(e);
+        sigCtx.strokeStyle = '#0f172a';
+        sigCtx.lineWidth = 2.6;
+        sigCtx.lineCap = 'round';
+        sigCtx.lineTo(p.x, p.y);
+        sigCtx.stroke();
+      }, { passive: false });
+      window.addEventListener('touchend', () => {
+        if (drawingSig) {
+          drawingSig = false;
+          resumeData.signature = sigCanvas.toDataURL('image/png');
+          saveData();
+          renderResume();
+        }
+      });
+
+      document.getElementById('btn-clear-sig').addEventListener('click', () => {
+        sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+        resumeData.signature = '';
+        saveData();
+        renderResume();
+      });
+
+      document.getElementById('f-sig-upload').addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const r = new FileReader();
+        r.onload = (ev) => {
+          resumeData.signature = ev.target.result;
+          saveData();
+          renderResume();
+          showToast('✍️ Signature uploaded!');
+        };
+        r.readAsDataURL(file);
+      });
+
+      /* ----------------------------------------------------------------------
+         MODULAR COMPONENT BUILDERS FOR 120 UNIQUE TEMPLATES
+         ---------------------------------------------------------------------- */
+      function shiftHex(hex, amt) {
+        let c = hex.replace('#', '');
+        if (c.length === 3) c = c.split('').map((x) => x + x).join('');
+        const num = parseInt(c, 16);
+        const r = Math.min(255, Math.max(0, (num >> 16) + amt));
+        const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00ff) + amt));
+        const b = Math.min(255, Math.max(0, (num & 0x0000ff) + amt));
+        return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+      }
+
+      function getHeadingStyle(style, a) {
+        switch (style) {
+          case 'left-tick':
+            return `font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:${a};border-left:4px solid ${a};padding-left:8px;margin-bottom:7px;`;
+          case 'shaded-bar':
+            return `font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:${a};background:${a}14;padding:4px 9px;border-radius:4px;margin-bottom:7px;`;
+          case 'shaded-left':
+            return `font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:${a};background:${a}14;padding:4px 9px;border-left:4px solid ${a};margin-bottom:7px;`;
+          case 'full-bar':
+            return `font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;color:#ffffff;background:${a};padding:4px 10px;border-radius:3px;margin-bottom:7px;`;
+          case 'pill-badge':
+            return `display:inline-block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.7px;color:#ffffff;background:${a};padding:3px 12px;border-radius:999px;margin-bottom:8px;`;
+          case 'double-bottom':
+            return `font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:${a};border-bottom:3px double ${a};padding-bottom:3px;margin-bottom:7px;`;
+          case 'thin-line':
+            return `font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:#0f172a;border-bottom:1px solid #cbd5e1;padding-bottom:3px;margin-bottom:7px;`;
+          case 'center-line':
+            return `font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:${a};text-align:center;border-top:1px solid ${a}55;border-bottom:1px solid ${a}55;padding:3px 0;margin-bottom:8px;`;
+          case 'code-tag':
+            return `font-size:12px;font-weight:800;letter-spacing:0.4px;color:${a};border-bottom:1.5px dashed ${a};padding-bottom:3px;margin-bottom:7px;`;
+          case 'accent-cap':
+            return `font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:0.7px;color:${a};margin-bottom:6px;`;
+          default:
+            return `font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:${a};border-bottom:2px solid ${a};padding-bottom:3px;margin-bottom:7px;`;
+        }
+      }
+
+      function getSkillsHtml(style, a) {
+        if (!resumeData.skills.length) return '';
+        if (style === 'inline-sep') {
+          return `<div style="font-size:11.5px;line-height:1.55;color:#1e293b;">${resumeData.skills.map(escapeHtml).join(' &nbsp;•&nbsp; ')}</div>`;
+        }
+        if (style === 'dot-list') {
+          return `<ul style="margin:0 0 0 16px;padding:0;font-size:11.5px;line-height:1.5;color:#1e293b;">${resumeData.skills.map((s) => `<li>${escapeHtml(s)}</li>`).join('')}</ul>`;
+        }
+        if (style === 'grid-2') {
+          return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;font-size:11.5px;color:#1e293b;">${resumeData.skills.map((s) => `<div>▪ ${escapeHtml(s)}</div>`).join('')}</div>`;
+        }
+        if (style === 'outline') {
+          return resumeData.skills.map((s) => `<span style="display:inline-block;background:#ffffff;color:${a};border:1.5px solid ${a};padding:2.5px 9px;border-radius:999px;font-size:10.5px;font-weight:700;margin:0 5px 5px 0;">${escapeHtml(s)}</span>`).join('');
+        }
+        if (style === 'tag') {
+          return resumeData.skills.map((s) => `<span style="display:inline-block;background:#f1f5f9;color:#0f172a;border-left:3px solid ${a};padding:3px 8px;font-size:11px;font-weight:700;margin:0 5px 5px 0;">${escapeHtml(s)}</span>`).join('');
+        }
+        if (style === 'chip-solid') {
+          return resumeData.skills.map((s) => `<span style="display:inline-block;background:${a};color:#ffffff;padding:3px 9px;border-radius:5px;font-size:10.5px;font-weight:700;margin:0 5px 5px 0;">${escapeHtml(s)}</span>`).join('');
+        }
+        return resumeData.skills.map((s) => `<span style="display:inline-block;background:${a}14;color:${a};border:1px solid ${a}35;padding:3px 9px;border-radius:6px;font-size:11px;font-weight:700;margin:0 5px 5px 0;">${escapeHtml(s)}</span>`).join('');
+      }
+
+      function getSidebarSkillsHtml(style, isDarkOrSolid, a) {
+        if (!resumeData.skills.length) return '';
+        if (style === 'side-pills') {
+          const pillCss = isDarkOrSolid
+            ? 'background:rgba(255,255,255,0.16);color:#ffffff;border:1px solid rgba(255,255,255,0.3);'
+            : `background:#ffffff;color:${a};border:1px solid ${a}40;`;
+          return `<div>${resumeData.skills.map((s) => `<span style="display:inline-block;${pillCss}padding:3px 8px;border-radius:6px;font-size:10.5px;font-weight:700;margin:0 4px 4px 0;">${escapeHtml(s)}</span>`).join('')}</div>`;
+        }
+        if (style === 'side-bars') {
+          const barBg = isDarkOrSolid ? 'rgba(255,255,255,0.22)' : `${a}25`;
+          const fillBg = isDarkOrSolid ? '#ffffff' : a;
+          return `<div style="display:flex;flex-direction:column;gap:6px;font-size:10.5px;">${resumeData.skills.map((s, i) => `
+            <div>
+              <div style="font-weight:700;margin-bottom:2px;">${escapeHtml(s)}</div>
+              <div style="height:4px;background:${barBg};border-radius:99px;overflow:hidden;">
+                <div style="height:100%;width:${92 - (i % 4) * 6}%;background:${fillBg};"></div>
+              </div>
+            </div>
+          `).join('')}</div>`;
+        }
+        return `<ul style="margin:0 0 0 15px;padding:0;font-size:11px;line-height:1.55;">${resumeData.skills.map((s) => `<li>${escapeHtml(s)}</li>`).join('')}</ul>`;
+      }
+
+      function getPhotoHtml(sizePx = 88, borderColor = '#cbd5e1') {
+        if (!resumeData.photo || resumeData.photoShape === 'hidden') return '';
+        const radius =
+          resumeData.photoShape === 'circle' ? '9999px' :
+          resumeData.photoShape === 'rounded' ? '10px' : '2px';
+        const h = resumeData.photoShape === 'circle' ? sizePx : Math.round(sizePx * 1.15);
+        return `<img src="${resumeData.photo}" alt="Photo" style="width:${sizePx}px;height:${h}px;object-fit:cover;border-radius:${radius};border:2px solid ${borderColor};flex-shrink:0;" />`;
+      }
+
+      function getEducationHtml(accent, cardStyle = 'clean') {
+        const valid = resumeData.education.filter((e) => e.degree || e.institute);
+        if (!valid.length) return '';
+
+        if (resumeData.eduStyle === 'table') {
+          const rows = valid.map((e) => `
+            <tr>
+              <td style="border:1px solid #cbd5e1;padding:5px 8px;font-weight:700;">${escapeHtml(e.degree)}</td>
+              <td style="border:1px solid #cbd5e1;padding:5px 8px;">${escapeHtml(e.institute)}</td>
+              <td style="border:1px solid #cbd5e1;padding:5px 8px;text-align:center;">${escapeHtml(e.year)}</td>
+              <td style="border:1px solid #cbd5e1;padding:5px 8px;text-align:center;font-weight:600;">${escapeHtml(e.score)}</td>
+            </tr>
+          `).join('');
+          return `
+            <table style="width:100%;border-collapse:collapse;font-size:11.5px;margin-top:4px;">
+              <thead>
+                <tr style="background:${accent}15;color:${accent};">
+                  <th style="border:1px solid #cbd5e1;padding:5px 8px;text-align:left;">Qualification</th>
+                  <th style="border:1px solid #cbd5e1;padding:5px 8px;text-align:left;">Board / University</th>
+                  <th style="border:1px solid #cbd5e1;padding:5px 8px;text-align:center;">Year</th>
+                  <th style="border:1px solid #cbd5e1;padding:5px 8px;text-align:center;">Marks / %</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          `;
+        }
+
+        return valid.map((e) => {
+          const boxCss = cardStyle === 'left-border'
+            ? `border-left:3px solid ${accent};padding-left:9px;`
+            : cardStyle === 'tinted'
+            ? `background:#f8fafc;border:1px solid #e2e8f0;padding:6px 9px;border-radius:6px;`
+            : '';
+          return `
+            <div style="margin-bottom:7px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;${boxCss}">
+              <div>
+                <div style="font-weight:700;font-size:12.5px;color:#0f172a;">${escapeHtml(e.degree)}</div>
+                <div style="font-size:11.5px;color:#475569;">${escapeHtml(e.institute)}</div>
+              </div>
+              <div style="text-align:right;font-size:11.5px;flex-shrink:0;">
+                <span style="font-weight:700;color:${accent};">${escapeHtml(e.year)}</span>
+                ${e.score ? `<div style="color:#334155;font-weight:600;">${escapeHtml(e.score)}</div>` : ''}
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function getExperienceHtml(accent, cardStyle = 'clean') {
+        const valid = resumeData.experience.filter((x) => x.title || x.company);
+        if (!valid.length) return '';
+        return valid.map((x) => {
+          const boxCss = cardStyle === 'left-border'
+            ? `border-left:3px solid ${accent};padding-left:9px;`
+            : cardStyle === 'tinted'
+            ? `background:#f8fafc;border:1px solid #e2e8f0;padding:7px 10px;border-radius:6px;`
+            : cardStyle === 'timeline'
+            ? `border-left:2px solid ${accent}55;padding-left:11px;position:relative;`
+            : '';
+          return `
+            <div style="margin-bottom:9px;${boxCss}">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
+                <div style="font-weight:700;font-size:12.5px;color:#0f172a;">${escapeHtml(x.title)}</div>
+                <div style="font-size:11px;font-weight:700;color:${accent};flex-shrink:0;">${escapeHtml(x.duration)}</div>
+              </div>
+              <div style="font-size:11.5px;font-weight:600;color:#475569;margin-bottom:2px;">${escapeHtml(x.company)}</div>
+              ${x.desc ? `<div style="font-size:11.5px;color:#334155;line-height:1.45;">${escapeHtml(x.desc)}</div>` : ''}
+            </div>
+          `;
+        }).join('');
+      }
+
+      function getPersonalTableHtml() {
+        if (!resumeData.showPersonal) return '';
+        const rows = [
+          ["Father's Name", resumeData.father],
+          ["Mother's Name", resumeData.mother],
+          ['Date of Birth', resumeData.dob],
+          ['Gender', resumeData.gender],
+          ['Marital Status', resumeData.marital],
+          ['Nationality', resumeData.nationality],
+          ['Languages Known', resumeData.languages],
+          ['Hobbies', resumeData.hobbies]
+        ].filter((r) => r[1] && r[1].trim() !== '');
+
+        if (!rows.length) return '';
+        return `
+          <table style="width:100%;font-size:11.5px;border-collapse:collapse;margin-top:3px;">
+            <tbody>
+              ${rows.map(([label, val]) => `
+                <tr>
+                  <td style="padding:2.5px 0;width:140px;font-weight:700;color:#334155;">${label}</td>
+                  <td style="padding:2.5px 6px;width:14px;font-weight:700;">:</td>
+                  <td style="padding:2.5px 0;color:#0f172a;">${escapeHtml(val)}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      }
+
+      function getCustomSectionHtml(headingStyle) {
+        if (!resumeData.customTitle.trim() || !resumeData.customItems.trim()) return '';
+        const lines = resumeData.customItems.split('\n').map((l) => l.trim()).filter(Boolean);
+        return `
+          <div style="margin-top:12px;">
+            <div style="${headingStyle}">${escapeHtml(resumeData.customTitle)}</div>
+            <ul style="margin:4px 0 0 16px;padding:0;font-size:11.5px;line-height:1.48;color:#1e293b;">
+              ${lines.map((l) => `<li style="margin-bottom:2px;">${escapeHtml(l.replace(/^[•\-*]\s*/, ''))}</li>`).join('')}
+            </ul>
+          </div>
+        `;
+      }
+
+      function getDeclarationHtml(accent) {
+        if (!resumeData.showDeclaration) return '';
+        const sigImg = resumeData.signature
+          ? `<img src="${resumeData.signature}" alt="Signature" style="max-height:40px;max-width:135px;object-fit:contain;margin-bottom:2px;" />`
+          : `<div style="height:26px;"></div>`;
+        return `
+          <div style="margin-top:14px;padding-top:9px;border-top:1px solid #e2e8f0;">
+            <div style="font-size:11px;font-weight:800;text-transform:uppercase;color:${accent};letter-spacing:0.5px;margin-bottom:3px;">Declaration</div>
+            <p style="font-size:11px;color:#334155;line-height:1.42;margin:0 0 10px 0;">${escapeHtml(resumeData.declaration)}</p>
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;font-size:11.5px;">
+              <div>
+                <div><strong>Date:</strong> ${escapeHtml(resumeData.date)}</div>
+                <div><strong>Place:</strong> ${escapeHtml(resumeData.place)}</div>
+              </div>
+              <div style="text-align:center;">
+                ${sigImg}
+                <div style="font-weight:700;border-top:1px solid #64748b;padding-top:2px;min-width:125px;">(${escapeHtml(resumeData.name || 'Signature')})</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function getSidebarSurface(tone, a) {
+        switch (tone) {
+          case 'dark':
+            return { bg: '#0f172a', fg: '#ffffff', isDark: true, border: '' };
+          case 'gradient':
+            return { bg: `linear-gradient(160deg, ${a} 0%, ${shiftHex(a, -45)} 100%)`, fg: '#ffffff', isDark: true, border: '' };
+          case 'tint':
+            return { bg: `${a}12`, fg: '#0f172a', isDark: false, border: `border-right:1px solid ${a}30;` };
+          case 'warm':
+            return { bg: '#faf6f0', fg: '#1e293b', isDark: false, border: 'border-right:1px solid #e7dccb;' };
+          case 'light-grey':
+            return { bg: '#f1f5f9', fg: '#0f172a', isDark: false, border: 'border-right:1px solid #cbd5e1;' };
+          case 'white-border':
+            return { bg: '#ffffff', fg: '#0f172a', isDark: false, border: `border-right:2px solid ${a};` };
+          default:
+            return { bg: a, fg: '#ffffff', isDark: true, border: '' };
+        }
+      }
+
+      /* ----------------------------------------------------------------------
+         MASTER RENDERER FOR ALL 120 UNIQUE TEMPLATES
+         ---------------------------------------------------------------------- */
+      function renderResume() {
+        const sheet = document.getElementById('resume-sheet');
+        sheet.className = resumeData.font;
+        const a = resumeData.accent;
+        const spec = getActiveSpec();
+
+        const contactLine = [
+          resumeData.phone ? `📞 ${escapeHtml(resumeData.phone)}` : '',
+          resumeData.email ? `✉️ ${escapeHtml(resumeData.email)}` : '',
+          resumeData.link ? `🔗 ${escapeHtml(resumeData.link)}` : ''
+        ].filter(Boolean).join(' &nbsp;|&nbsp; ');
+
+        const stdHeading = getHeadingStyle(spec.heading || 'bar-bottom', a);
+        const cardStyle = spec.cardStyle || 'clean';
+
+        // ====================================================================
+        // ARCHETYPE A: LEFT SIDEBAR TEMPLATES (16 - 30)
+        // ====================================================================
+        if (spec.arch === 'left-sidebar') {
+          const surf = getSidebarSurface(spec.sideTone, a);
+          const divBorder = surf.isDark ? 'rgba(255,255,255,0.22)' : '#cbd5e1';
+          const sideTitleColor = surf.isDark ? '#ffffff' : a;
+
+          sheet.innerHTML = `
+            <div style="display:flex;min-height:297mm;">
+              <div style="width:${spec.sideWidth || '34%'};background:${surf.bg};color:${surf.fg};${surf.border}padding:22px 17px;display:flex;flex-direction:column;gap:14px;">
+                <div style="text-align:center;">
+                  ${getPhotoHtml(102, surf.isDark ? '#ffffff' : a)}
+                  <h1 style="font-size:18.5px;font-weight:800;margin:9px 0 3px 0;line-height:1.2;color:${surf.isDark ? '#ffffff' : a};">${escapeHtml(resumeData.name)}</h1>
+                  <div style="font-size:11.5px;opacity:0.9;font-weight:600;">${escapeHtml(resumeData.role)}</div>
+                </div>
+                <div style="font-size:11px;line-height:1.58;border-top:1px solid ${divBorder};padding-top:11px;">
+                  <div style="font-weight:800;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:5px;font-size:11px;color:${sideTitleColor};">Contact Details</div>
+                  ${resumeData.phone ? `<div>📞 ${escapeHtml(resumeData.phone)}</div>` : ''}
+                  ${resumeData.email ? `<div style="word-break:break-all;">✉️ ${escapeHtml(resumeData.email)}</div>` : ''}
+                  ${resumeData.address ? `<div>📍 ${escapeHtml(resumeData.address)}</div>` : ''}
+                  ${resumeData.link ? `<div>🔗 ${escapeHtml(resumeData.link)}</div>` : ''}
+                </div>
+                ${resumeData.skills.length ? `
+                  <div style="border-top:1px solid ${divBorder};padding-top:11px;">
+                    <div style="font-weight:800;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px;font-size:11px;color:${sideTitleColor};">Key Skills</div>
+                    ${getSidebarSkillsHtml(spec.skillStyle, surf.isDark, a)}
+                  </div>
+                ` : ''}
+                ${resumeData.languages ? `
+                  <div style="border-top:1px solid ${divBorder};padding-top:11px;font-size:11px;">
+                    <div style="font-weight:800;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:4px;font-size:11px;color:${sideTitleColor};">Languages</div>
+                    <div>${escapeHtml(resumeData.languages)}</div>
+                  </div>
+                ` : ''}
+              </div>
+              <div style="flex:1;padding:22px 21px;">
+                ${resumeData.objective ? `<div style="margin-bottom:13px;"><div style="${stdHeading}">Career Objective</div><p style="font-size:11.5px;line-height:1.5;margin:0;color:#334155;">${escapeHtml(resumeData.objective)}</p></div>` : ''}
+                ${resumeData.experience.length ? `<div style="margin-bottom:13px;"><div style="${stdHeading}">Work Experience</div>${getExperienceHtml(a, cardStyle)}</div>` : ''}
+                <div style="margin-bottom:13px;"><div style="${stdHeading}">Academic Qualification</div>${getEducationHtml(a, cardStyle)}</div>
+                ${getCustomSectionHtml(stdHeading)}
+                ${resumeData.showPersonal ? `<div style="margin-top:13px;"><div style="${stdHeading}">Personal Details</div>${getPersonalTableHtml()}</div>` : ''}
+                ${getDeclarationHtml(a)}
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        // ====================================================================
+        // ARCHETYPE B: FULL-HEIGHT RIGHT SIDEBAR TEMPLATES (35, 36, 37, 41, 44)
+        // ====================================================================
+        if (spec.arch === 'right-full') {
+          const surf = getSidebarSurface(spec.sideTone, a);
+          const divBorder = surf.isDark ? 'rgba(255,255,255,0.22)' : '#cbd5e1';
+          const sideTitleColor = surf.isDark ? '#ffffff' : a;
+
+          sheet.innerHTML = `
+            <div style="display:flex;min-height:297mm;">
+              <div style="flex:1;padding:22px 22px;">
+                <div style="border-bottom:2.5px solid ${a};padding-bottom:10px;margin-bottom:13px;">
+                  <h1 style="font-size:23px;font-weight:800;color:${a};margin:0;">${escapeHtml(resumeData.name)}</h1>
+                  <div style="font-size:13px;font-weight:600;color:#475569;margin-top:2px;">${escapeHtml(resumeData.role)}</div>
+                </div>
+                ${resumeData.objective ? `<div style="margin-bottom:13px;"><div style="${stdHeading}">Career Objective</div><p style="font-size:11.5px;line-height:1.5;margin:0;color:#334155;">${escapeHtml(resumeData.objective)}</p></div>` : ''}
+                ${resumeData.experience.length ? `<div style="margin-bottom:13px;"><div style="${stdHeading}">Work Experience</div>${getExperienceHtml(a, cardStyle)}</div>` : ''}
+                <div style="margin-bottom:13px;"><div style="${stdHeading}">Education</div>${getEducationHtml(a, cardStyle)}</div>
+                ${getCustomSectionHtml(stdHeading)}
+                ${getDeclarationHtml(a)}
+              </div>
+              <div style="width:33%;background:${surf.bg};color:${surf.fg};padding:22px 16px;display:flex;flex-direction:column;gap:14px;">
+                <div style="text-align:center;">${getPhotoHtml(96, surf.isDark ? '#ffffff' : a)}</div>
+                <div style="font-size:11px;line-height:1.58;border-top:1px solid ${divBorder};padding-top:10px;">
+                  <div style="font-weight:800;text-transform:uppercase;margin-bottom:5px;color:${sideTitleColor};">Contact</div>
+                  ${resumeData.phone ? `<div>📞 ${escapeHtml(resumeData.phone)}</div>` : ''}
+                  ${resumeData.email ? `<div style="word-break:break-all;">✉️ ${escapeHtml(resumeData.email)}</div>` : ''}
+                  ${resumeData.address ? `<div>📍 ${escapeHtml(resumeData.address)}</div>` : ''}
+                </div>
+                ${resumeData.skills.length ? `
+                  <div style="border-top:1px solid ${divBorder};padding-top:10px;">
+                    <div style="font-weight:800;text-transform:uppercase;margin-bottom:6px;color:${sideTitleColor};">Skills</div>
+                    ${getSidebarSkillsHtml(spec.skillStyle, surf.isDark, a)}
+                  </div>
+                ` : ''}
+                ${resumeData.showPersonal ? `
+                  <div style="border-top:1px solid ${divBorder};padding-top:10px;font-size:10.5px;">
+                    <div style="font-weight:800;text-transform:uppercase;margin-bottom:5px;color:${sideTitleColor};">Personal Info</div>
+                    <div><strong>DOB:</strong> ${escapeHtml(resumeData.dob)}</div>
+                    <div><strong>Father:</strong> ${escapeHtml(resumeData.father)}</div>
+                    <div><strong>Languages:</strong> ${escapeHtml(resumeData.languages)}</div>
+                    <div><strong>Nationality:</strong> ${escapeHtml(resumeData.nationality)}</div>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        // ====================================================================
+        // ARCHETYPE C: RIGHT SIDEBAR COMPACT (31 - 34, 38 - 40, 42, 43, 45)
+        // ====================================================================
+        if (spec.arch === 'right-sidebar') {
+          const surf = getSidebarSurface(spec.sideTone || 'light-grey', a);
+          const sideHeading = surf.isDark
+            ? 'font-size:11.5px;font-weight:800;text-transform:uppercase;color:#ffffff;border-bottom:1px solid rgba(255,255,255,0.3);padding-bottom:3px;margin-bottom:7px;'
+            : stdHeading;
+
+          sheet.innerHTML = `
+            <div style="padding:20px 22px;">
+              <div style="border-bottom:3px solid ${a};padding-bottom:11px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:12px;">
+                <div>
+                  <h1 style="font-size:23px;font-weight:800;color:${a};margin:0;">${escapeHtml(resumeData.name)}</h1>
+                  <div style="font-size:13px;font-weight:600;color:#475569;margin-top:2px;">${escapeHtml(resumeData.role)}</div>
+                </div>
+                <div style="text-align:right;font-size:11px;line-height:1.5;color:#334155;">
+                  <div>${escapeHtml(resumeData.phone)}</div>
+                  <div>${escapeHtml(resumeData.email)}</div>
+                  <div>${escapeHtml(resumeData.address)}</div>
+                </div>
+              </div>
+              <div style="display:flex;gap:18px;">
+                <div style="width:65%;">
+                  ${resumeData.objective ? `<div style="margin-bottom:13px;"><div style="${stdHeading}">Career Objective</div><p style="font-size:11.5px;line-height:1.5;margin:0;">${escapeHtml(resumeData.objective)}</p></div>` : ''}
+                  ${resumeData.experience.length ? `<div style="margin-bottom:13px;"><div style="${stdHeading}">Experience</div>${getExperienceHtml(a, cardStyle)}</div>` : ''}
+                  <div style="margin-bottom:13px;"><div style="${stdHeading}">Education</div>${getEducationHtml(a, cardStyle)}</div>
+                  ${getCustomSectionHtml(stdHeading)}
+                  ${getDeclarationHtml(a)}
+                </div>
+                <div style="width:35%;background:${surf.bg};color:${surf.fg};border:1px solid #cbd5e1;border-radius:10px;padding:13px;">
+                  <div style="text-align:center;margin-bottom:10px;">${getPhotoHtml(92, surf.isDark ? '#ffffff' : a)}</div>
+                  ${resumeData.skills.length ? `<div style="margin-bottom:13px;"><div style="${sideHeading}">Skills</div>${surf.isDark ? getSidebarSkillsHtml('side-pills', true, a) : getSkillsHtml(spec.skillStyle, a)}</div>` : ''}
+                  ${resumeData.showPersonal ? `<div><div style="${sideHeading}">Personal Info</div><div style="font-size:11px;line-height:1.6;">
+                    ${resumeData.father ? `<div><strong>Father:</strong> ${escapeHtml(resumeData.father)}</div>` : ''}
+                    ${resumeData.dob ? `<div><strong>DOB:</strong> ${escapeHtml(resumeData.dob)}</div>` : ''}
+                    ${resumeData.gender ? `<div><strong>Gender:</strong> ${escapeHtml(resumeData.gender)}</div>` : ''}
+                    ${resumeData.marital ? `<div><strong>Marital:</strong> ${escapeHtml(resumeData.marital)}</div>` : ''}
+                    ${resumeData.languages ? `<div><strong>Languages:</strong> ${escapeHtml(resumeData.languages)}</div>` : ''}
+                  </div></div>` : ''}
+                </div>
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        // ====================================================================
+        // ARCHETYPE D: CORPORATE BANNER HEADER (46 - 60) & TECH PRO (91 - 104)
+        // ====================================================================
+        if (spec.arch === 'banner' || spec.arch === 'tech') {
+          const tone = spec.bannerTone || spec.techHeader || 'solid';
+          let bannerHtml = '';
+
+          if (tone === 'dark' || tone === 'dark-code') {
+            bannerHtml = `
+              <div style="background:#0f172a;color:#ffffff;padding:22px 26px;display:flex;justify-content:space-between;align-items:center;gap:16px;border-bottom:4px solid ${a};">
+                <div>
+                  <h1 style="font-size:23px;font-weight:800;margin:0;letter-spacing:0.4px;">${tone === 'dark-code' ? '&gt; ' : ''}${escapeHtml(resumeData.name)}</h1>
+                  <div style="font-size:13px;font-weight:600;color:${shiftHex(a, 75)};margin-top:3px;">${escapeHtml(resumeData.role)}</div>
+                  <div style="font-size:11px;margin-top:7px;opacity:0.92;">${contactLine}</div>
+                  ${resumeData.address ? `<div style="font-size:11px;margin-top:2px;opacity:0.85;">📍 ${escapeHtml(resumeData.address)}</div>` : ''}
+                </div>
+                ${getPhotoHtml(84, a)}
+              </div>
+            `;
+          } else if (tone === 'gradient') {
+            bannerHtml = `
+              <div style="background:linear-gradient(125deg, ${a} 0%, ${shiftHex(a, -45)} 100%);color:#ffffff;padding:23px 26px;display:flex;justify-content:space-between;align-items:center;gap:16px;">
+                <div>
+                  <h1 style="font-size:24px;font-weight:800;margin:0;">${escapeHtml(resumeData.name)}</h1>
+                  <div style="font-size:13px;font-weight:600;opacity:0.92;margin-top:3px;">${escapeHtml(resumeData.role)}</div>
+                  <div style="font-size:11px;margin-top:7px;opacity:0.95;">${contactLine}</div>
+                  ${resumeData.address ? `<div style="font-size:11px;margin-top:2px;opacity:0.9;">📍 ${escapeHtml(resumeData.address)}</div>` : ''}
+                </div>
+                ${getPhotoHtml(86, '#ffffff')}
+              </div>
+            `;
+          } else if (tone === 'solid-center' || tone === 'dark-center') {
+            const bg = tone === 'dark-center' ? '#0f172a' : a;
+            bannerHtml = `
+              <div style="background:${bg};color:#ffffff;padding:22px 26px;text-align:center;">
+                ${resumeData.photo && resumeData.photoShape !== 'hidden' ? `<div style="margin-bottom:8px;display:flex;justify-content:center;">${getPhotoHtml(78, '#ffffff')}</div>` : ''}
+                <h1 style="font-size:24px;font-weight:800;margin:0;letter-spacing:0.6px;">${escapeHtml(resumeData.name)}</h1>
+                <div style="font-size:13px;font-weight:600;opacity:0.92;margin-top:3px;">${escapeHtml(resumeData.role)}</div>
+                <div style="font-size:11px;margin-top:7px;opacity:0.95;">${contactLine}</div>
+                ${resumeData.address ? `<div style="font-size:11px;margin-top:2px;opacity:0.9;">📍 ${escapeHtml(resumeData.address)}</div>` : ''}
+              </div>
+            `;
+          } else if (tone === 'ribbon') {
+            bannerHtml = `
+              <div>
+                <div style="padding:20px 26px 14px 26px;display:flex;justify-content:space-between;align-items:center;gap:16px;">
+                  <div>
+                    <h1 style="font-size:24px;font-weight:800;color:${a};margin:0;">${escapeHtml(resumeData.name)}</h1>
+                    <div style="font-size:13px;font-weight:600;color:#475569;margin-top:2px;">${escapeHtml(resumeData.role)}</div>
+                  </div>
+                  ${getPhotoHtml(80, a)}
+                </div>
+                <div style="background:${a};color:#ffffff;padding:7px 26px;font-size:11px;font-weight:600;">
+                  ${contactLine} ${resumeData.address ? ` &nbsp;|&nbsp; 📍 ${escapeHtml(resumeData.address)}` : ''}
+                </div>
+              </div>
+            `;
+          } else if (tone === 'floating') {
+            bannerHtml = `
+              <div style="padding:18px 22px 0 22px;">
+                <div style="background:${a};color:#ffffff;padding:18px 22px;border-radius:14px;display:flex;justify-content:space-between;align-items:center;gap:14px;">
+                  <div>
+                    <h1 style="font-size:22px;font-weight:800;margin:0;">${escapeHtml(resumeData.name)}</h1>
+                    <div style="font-size:12.5px;font-weight:600;opacity:0.92;margin-top:2px;">${escapeHtml(resumeData.role)}</div>
+                    <div style="font-size:11px;margin-top:6px;">${contactLine}</div>
+                  </div>
+                  ${getPhotoHtml(80, '#ffffff')}
+                </div>
+              </div>
+            `;
+          } else if (tone === 'tint' || tone === 'tint-border' || tone === 'warm' || tone === 'gradient-soft' || tone === 'clean-grid' || tone === 'github-box' || tone === 'left-accent') {
+            const bg = tone === 'warm' ? '#faf6f0' : tone === 'github-box' ? '#f8fafc' : `${a}12`;
+            const extra = tone === 'left-accent' ? `border-left:6px solid ${a};` : tone === 'github-box' ? 'border-bottom:1px solid #cbd5e1;' : `border-bottom:2.5px solid ${a};`;
+            bannerHtml = `
+              <div style="background:${bg};padding:20px 26px;display:flex;justify-content:space-between;align-items:center;gap:16px;${extra}">
+                <div>
+                  <h1 style="font-size:23px;font-weight:800;color:${a};margin:0;">${escapeHtml(resumeData.name)}</h1>
+                  <div style="font-size:13px;font-weight:600;color:#334155;margin-top:2px;">${escapeHtml(resumeData.role)}</div>
+                  <div style="font-size:11px;color:#334155;margin-top:6px;">${contactLine}</div>
+                  ${resumeData.address ? `<div style="font-size:11px;color:#475569;margin-top:2px;">📍 ${escapeHtml(resumeData.address)}</div>` : ''}
+                </div>
+                ${getPhotoHtml(84, a)}
+              </div>
+            `;
+          } else {
+            bannerHtml = `
+              <div style="background:${a};color:#ffffff;padding:22px 26px;display:flex;justify-content:space-between;align-items:center;gap:16px;">
+                <div>
+                  <h1 style="font-size:24px;font-weight:800;margin:0;letter-spacing:0.4px;">${escapeHtml(resumeData.name)}</h1>
+                  <div style="font-size:13px;font-weight:600;opacity:0.92;margin-top:3px;">${escapeHtml(resumeData.role)}</div>
+                  <div style="font-size:11px;margin-top:7px;opacity:0.95;">${contactLine}</div>
+                  ${resumeData.address ? `<div style="font-size:11px;margin-top:2px;opacity:0.9;">📍 ${escapeHtml(resumeData.address)}</div>` : ''}
+                </div>
+                ${getPhotoHtml(86, '#ffffff')}
+              </div>
+            `;
+          }
+
+          if (spec.bodyCols === 2) {
+            sheet.innerHTML = `
+              <div>
+                ${bannerHtml}
+                <div style="padding:18px 24px;">
+                  ${resumeData.objective ? `<div style="margin-bottom:13px;"><div style="${stdHeading}">Professional Summary</div><p style="font-size:11.5px;line-height:1.5;margin:0;">${escapeHtml(resumeData.objective)}</p></div>` : ''}
+                  <div style="display:flex;gap:18px;">
+                    <div style="width:58%;">
+                      ${resumeData.experience.length ? `<div style="margin-bottom:13px;"><div style="${stdHeading}">Work Experience</div>${getExperienceHtml(a, cardStyle)}</div>` : ''}
+                      <div style="margin-bottom:13px;"><div style="${stdHeading}">Education</div>${getEducationHtml(a, cardStyle)}</div>
+                      ${getCustomSectionHtml(stdHeading)}
+                    </div>
+                    <div style="width:42%;">
+                      ${resumeData.skills.length ? `<div style="margin-bottom:13px;"><div style="${stdHeading}">Core Skills</div><div>${getSkillsHtml(spec.skillStyle, a)}</div></div>` : ''}
+                      ${resumeData.showPersonal ? `<div><div style="${stdHeading}">Personal Details</div>${getPersonalTableHtml()}</div>` : ''}
+                    </div>
+                  </div>
+                  ${getDeclarationHtml(a)}
+                </div>
+              </div>
+            `;
+            return;
+          }
+
+          sheet.innerHTML = `
+            <div>
+              ${bannerHtml}
+              <div style="padding:18px 26px;">
+                ${resumeData.objective ? `<div style="margin-bottom:13px;"><div style="${stdHeading}">Professional Summary</div><p style="font-size:11.5px;line-height:1.5;margin:0;">${escapeHtml(resumeData.objective)}</p></div>` : ''}
+                ${resumeData.experience.length ? `<div style="margin-bottom:13px;"><div style="${stdHeading}">Work Experience</div>${getExperienceHtml(a, cardStyle)}</div>` : ''}
+                <div style="margin-bottom:13px;"><div style="${stdHeading}">Education</div>${getEducationHtml(a, cardStyle)}</div>
+                ${resumeData.skills.length ? `<div style="margin-bottom:13px;"><div style="${stdHeading}">Core Competencies</div><div>${getSkillsHtml(spec.skillStyle, a)}</div></div>` : ''}
+                ${getCustomSectionHtml(stdHeading)}
+                ${resumeData.showPersonal ? `<div style="margin-top:13px;"><div style="${stdHeading}">Personal Profile</div>${getPersonalTableHtml()}</div>` : ''}
+                ${getDeclarationHtml(a)}
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        // ====================================================================
+        // ARCHETYPE E: INDIAN JOB BIODATA (61 - 75)
+        // ====================================================================
+        if (spec.arch === 'biodata') {
+          const frameCss =
+            spec.frame === 'double-solid' ? `border:4px double ${a};padding:15px 17px;min-height:262mm;` :
+            spec.frame === 'thick-top' ? `border:1.5px solid #cbd5e1;border-top:6px solid ${a};padding:15px 17px;min-height:262mm;` :
+            spec.frame === 'clean-outer' ? `border:1px solid #94a3b8;padding:15px 17px;min-height:262mm;` :
+            spec.frame === 'none' ? `padding:4px 2px;` :
+            `border:2px solid ${a};padding:15px 17px;min-height:262mm;`;
+
+          const bioHeading = getHeadingStyle(spec.heading || 'shaded-left', a);
+
+          sheet.innerHTML = `
+            <div style="padding:16mm 15mm;">
+              <div style="${frameCss}">
+                <div style="text-align:center;border-bottom:2px solid ${a};padding-bottom:7px;margin-bottom:13px;">
+                  <span style="background:${a};color:#ffffff;padding:4px 18px;border-radius:4px;font-size:13.5px;font-weight:800;letter-spacing:1.4px;">${escapeHtml(spec.badge || 'CURRICULUM VITAE / BIODATA')}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:13px;">
+                  <div style="font-size:12px;line-height:1.58;">
+                    <h1 style="font-size:21px;font-weight:800;color:${a};margin:0 0 2px 0;">${escapeHtml(resumeData.name)}</h1>
+                    <div style="font-weight:700;color:#334155;margin-bottom:5px;">${escapeHtml(resumeData.role)}</div>
+                    ${resumeData.address ? `<div><strong>Address:</strong> ${escapeHtml(resumeData.address)}</div>` : ''}
+                    ${resumeData.phone ? `<div><strong>Mobile No.:</strong> ${escapeHtml(resumeData.phone)}</div>` : ''}
+                    ${resumeData.email ? `<div><strong>Email ID:</strong> ${escapeHtml(resumeData.email)}</div>` : ''}
+                    ${resumeData.link ? `<div><strong>Profile:</strong> ${escapeHtml(resumeData.link)}</div>` : ''}
+                  </div>
+                  ${getPhotoHtml(88, a)}
+                </div>
+                ${resumeData.objective ? `<div style="margin-bottom:11px;"><div style="${bioHeading}">CAREER OBJECTIVE</div><p style="font-size:11.5px;line-height:1.48;margin:0;">${escapeHtml(resumeData.objective)}</p></div>` : ''}
+                <div style="margin-bottom:11px;"><div style="${bioHeading}">EDUCATIONAL QUALIFICATION</div>${getEducationHtml(a)}</div>
+                ${resumeData.experience.length ? `<div style="margin-bottom:11px;"><div style="${bioHeading}">WORK EXPERIENCE</div>${getExperienceHtml(a)}</div>` : ''}
+                ${resumeData.skills.length ? `<div style="margin-bottom:11px;"><div style="${bioHeading}">COMPUTER & TECHNICAL SKILLS</div><div>${getSkillsHtml('pill', a)}</div></div>` : ''}
+                ${getCustomSectionHtml(bioHeading)}
+                ${resumeData.showPersonal ? `<div style="margin-top:11px;"><div style="${bioHeading}">PERSONAL DETAILS</div>${getPersonalTableHtml()}</div>` : ''}
+                ${getDeclarationHtml(a)}
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        // ====================================================================
+        // ARCHETYPE F: CLASSIC ATS STANDARD (76 - 90)
+        // ====================================================================
+        if (spec.arch === 'ats') {
+          const pad = spec.compact ? '13mm 15mm' : '16mm 17mm';
+          const atsRule =
+            spec.rule === 'double-black' ? 'border-bottom:3px double #0f172a;' :
+            spec.rule === 'accent-thin' ? `border-bottom:1.5px solid ${a};` :
+            spec.rule === 'shaded-subtle' ? 'background:#f1f5f9;padding:3px 7px;border-bottom:1px solid #94a3b8;' :
+            spec.rule === 'none' ? '' :
+            'border-bottom:1.5px solid #0f172a;';
+
+          const atsHeading = `font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;color:${spec.rule === 'accent-thin' ? a : '#0f172a'};${atsRule}padding-bottom:2px;margin-bottom:6px;`;
+
+          const headerHtml = spec.align === 'split'
+            ? `<div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #0f172a;padding-bottom:9px;margin-bottom:12px;">
+                <div>
+                  <h1 style="font-size:22px;font-weight:800;color:#0f172a;margin:0;">${escapeHtml(resumeData.name)}</h1>
+                  <div style="font-size:12.5px;font-weight:600;color:#334155;">${escapeHtml(resumeData.role)}</div>
+                </div>
+                <div style="text-align:right;font-size:11px;color:#1e293b;line-height:1.45;">
+                  <div>${escapeHtml(resumeData.phone)} | ${escapeHtml(resumeData.email)}</div>
+                  <div>${escapeHtml(resumeData.address)}</div>
+                </div>
+              </div>`
+            : `<div style="text-align:${spec.align === 'center' ? 'center' : 'left'};border-bottom:2px solid #0f172a;padding-bottom:9px;margin-bottom:12px;">
+                <h1 style="font-size:22px;font-weight:800;color:#0f172a;margin:0;letter-spacing:0.4px;">${escapeHtml(resumeData.name)}</h1>
+                ${resumeData.role ? `<div style="font-size:12.5px;font-weight:600;color:#334155;margin-top:2px;">${escapeHtml(resumeData.role)}</div>` : ''}
+                <div style="font-size:11px;color:#1e293b;margin-top:5px;">
+                  ${[resumeData.phone, resumeData.email, resumeData.link, resumeData.address].filter(Boolean).map(escapeHtml).join(' • ')}
+                </div>
+              </div>`;
+
+          sheet.innerHTML = `
+            <div style="padding:${pad};">
+              ${headerHtml}
+              ${resumeData.objective ? `<div style="margin-bottom:11px;"><div style="${atsHeading}">Professional Summary</div><p style="font-size:11.5px;line-height:1.48;margin:0;color:#1e293b;">${escapeHtml(resumeData.objective)}</p></div>` : ''}
+              ${resumeData.experience.length ? `<div style="margin-bottom:11px;"><div style="${atsHeading}">Work Experience</div>${getExperienceHtml('#0f172a')}</div>` : ''}
+              <div style="margin-bottom:11px;"><div style="${atsHeading}">Education</div>${getEducationHtml('#0f172a')}</div>
+              ${resumeData.skills.length ? `<div style="margin-bottom:11px;"><div style="${atsHeading}">Skills & Competencies</div><div>${getSkillsHtml(spec.skillStyle || 'inline-sep', a)}</div></div>` : ''}
+              ${getCustomSectionHtml(atsHeading)}
+              ${resumeData.showPersonal ? `<div style="margin-top:11px;"><div style="${atsHeading}">Personal Information</div>${getPersonalTableHtml()}</div>` : ''}
+              ${getDeclarationHtml('#0f172a')}
+            </div>
+          `;
+          return;
+        }
+
+        // ====================================================================
+        // ARCHETYPE G: TWO-COLUMN BODY EXECUTIVE (8, 12, 15, 105)
+        // ====================================================================
+        if (spec.arch === 'two-col-body') {
+          sheet.innerHTML = `
+            <div style="padding:17mm 17mm;">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;border-bottom:2.5px solid ${a};padding-bottom:11px;margin-bottom:13px;">
+                <div>
+                  <h1 style="font-size:23px;font-weight:800;color:${a};margin:0;">${escapeHtml(resumeData.name)}</h1>
+                  <div style="font-size:13px;font-weight:600;color:#475569;margin-top:2px;">${escapeHtml(resumeData.role)}</div>
+                  <div style="font-size:11px;color:#334155;margin-top:5px;">${contactLine}</div>
+                  ${resumeData.address ? `<div style="font-size:11px;color:#475569;margin-top:2px;">📍 ${escapeHtml(resumeData.address)}</div>` : ''}
+                </div>
+                ${getPhotoHtml(84, a)}
+              </div>
+              ${resumeData.objective ? `<div style="margin-bottom:13px;"><div style="${stdHeading}">Career Objective</div><p style="font-size:11.5px;line-height:1.5;margin:0;">${escapeHtml(resumeData.objective)}</p></div>` : ''}
+              <div style="display:flex;gap:18px;">
+                <div style="width:60%;">
+                  ${resumeData.experience.length ? `<div style="margin-bottom:13px;"><div style="${stdHeading}">Work Experience</div>${getExperienceHtml(a, cardStyle)}</div>` : ''}
+                  <div style="margin-bottom:13px;"><div style="${stdHeading}">Academic Qualifications</div>${getEducationHtml(a, cardStyle)}</div>
+                  ${getCustomSectionHtml(stdHeading)}
+                </div>
+                <div style="width:40%;">
+                  ${resumeData.skills.length ? `<div style="margin-bottom:13px;"><div style="${stdHeading}">Key Skills</div><div>${getSkillsHtml(spec.skillStyle, a)}</div></div>` : ''}
+                  ${resumeData.showPersonal ? `<div><div style="${stdHeading}">Personal Profile</div>${getPersonalTableHtml()}</div>` : ''}
+                </div>
+              </div>
+              ${getDeclarationHtml(a)}
+            </div>
+          `;
+          return;
+        }
+
+        // ====================================================================
+        // ARCHETYPE H: SINGLE COLUMN EXECUTIVE & FRESHER FOCUS (1-7, 9-11, 13-14, 106-120)
+        // ====================================================================
+        const isFresher = spec.arch === 'fresher';
+        const pad = spec.density === 'compact' ? '14mm 15mm' : spec.density === 'airy' ? '20mm 20mm' : '17mm 17mm';
+
+        let headerBlock = '';
+        if (spec.header === 'left-bar') {
+          headerBlock = `
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;border-left:6px solid ${a};padding-left:14px;margin-bottom:14px;">
+              <div>
+                <h1 style="font-size:23px;font-weight:800;color:${a};margin:0;">${escapeHtml(resumeData.name)}</h1>
+                ${resumeData.role ? `<div style="font-size:13px;font-weight:600;color:#475569;margin-top:2px;">${escapeHtml(resumeData.role)}</div>` : ''}
+                <div style="font-size:11px;color:#334155;margin-top:6px;">${contactLine}</div>
+                ${resumeData.address ? `<div style="font-size:11px;color:#475569;margin-top:2px;">📍 ${escapeHtml(resumeData.address)}</div>` : ''}
+              </div>
+              ${getPhotoHtml(84, a)}
+            </div>
+          `;
+        } else if (spec.header === 'tinted-card') {
+          headerBlock = `
+            <div style="background:${a}10;border:1px solid ${a}30;border-radius:10px;padding:13px 16px;display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:14px;">
+              <div>
+                <h1 style="font-size:22px;font-weight:800;color:${a};margin:0;">${escapeHtml(resumeData.name)}</h1>
+                ${resumeData.role ? `<div style="font-size:13px;font-weight:600;color:#334155;margin-top:2px;">${escapeHtml(resumeData.role)}</div>` : ''}
+                <div style="font-size:11px;color:#334155;margin-top:6px;">${contactLine}</div>
+                ${resumeData.address ? `<div style="font-size:11px;color:#475569;margin-top:2px;">📍 ${escapeHtml(resumeData.address)}</div>` : ''}
+              </div>
+              ${getPhotoHtml(82, a)}
+            </div>
+          `;
+        } else if (spec.header === 'outlined-box') {
+          headerBlock = `
+            <div style="border:2px solid ${a};padding:13px 16px;display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:14px;">
+              <div>
+                <h1 style="font-size:22px;font-weight:800;color:${a};margin:0;">${escapeHtml(resumeData.name)}</h1>
+                ${resumeData.role ? `<div style="font-size:13px;font-weight:600;color:#334155;margin-top:2px;">${escapeHtml(resumeData.role)}</div>` : ''}
+                <div style="font-size:11px;color:#334155;margin-top:6px;">${contactLine}</div>
+                ${resumeData.address ? `<div style="font-size:11px;color:#475569;margin-top:2px;">📍 ${escapeHtml(resumeData.address)}</div>` : ''}
+              </div>
+              ${getPhotoHtml(82, a)}
+            </div>
+          `;
+        } else if (spec.header === 'center-rule') {
+          headerBlock = `
+            <div style="text-align:center;border-bottom:2px solid ${a};padding-bottom:11px;margin-bottom:14px;">
+              ${resumeData.photo && resumeData.photoShape !== 'hidden' ? `<div style="margin-bottom:7px;display:flex;justify-content:center;">${getPhotoHtml(78, a)}</div>` : ''}
+              <h1 style="font-size:24px;font-weight:800;color:${a};margin:0;letter-spacing:0.6px;">${escapeHtml(resumeData.name)}</h1>
+              ${resumeData.role ? `<div style="font-size:13px;font-weight:600;color:#475569;margin-top:2px;">${escapeHtml(resumeData.role)}</div>` : ''}
+              <div style="font-size:11px;color:#334155;margin-top:6px;">${contactLine}</div>
+              ${resumeData.address ? `<div style="font-size:11px;color:#475569;margin-top:2px;">📍 ${escapeHtml(resumeData.address)}</div>` : ''}
+            </div>
+          `;
+        } else if (spec.header === 'split-row') {
+          headerBlock = `
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:14px;border-bottom:2.5px solid ${a};padding-bottom:11px;margin-bottom:14px;">
+              <div>
+                <h1 style="font-size:22px;font-weight:800;color:${a};margin:0;">${escapeHtml(resumeData.name)}</h1>
+                ${resumeData.role ? `<div style="font-size:12.5px;font-weight:600;color:#475569;margin-top:2px;">${escapeHtml(resumeData.role)}</div>` : ''}
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div style="text-align:right;font-size:11px;line-height:1.5;color:#334155;">
+                  ${resumeData.phone ? `<div>${escapeHtml(resumeData.phone)}</div>` : ''}
+                  ${resumeData.email ? `<div>${escapeHtml(resumeData.email)}</div>` : ''}
+                  ${resumeData.address ? `<div>${escapeHtml(resumeData.address)}</div>` : ''}
+                </div>
+                ${getPhotoHtml(78, a)}
+              </div>
+            </div>
+          `;
+        } else {
+          const borderCss =
+            spec.header === 'double-line' ? `border-bottom:3px double ${a};` :
+            spec.header === 'top-stripe' ? `border-top:5px solid ${a};border-bottom:1.5px solid #cbd5e1;padding-top:10px;` :
+            spec.header === 'clean-minimal' ? 'border-bottom:1px solid #cbd5e1;' :
+            `border-bottom:2.5px solid ${a};`;
+
+          headerBlock = `
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;padding-bottom:11px;margin-bottom:14px;${borderCss}">
+              <div>
+                <h1 style="font-size:23px;font-weight:800;color:${a};margin:0;letter-spacing:0.3px;">${escapeHtml(resumeData.name)}</h1>
+                ${resumeData.role ? `<div style="font-size:13px;font-weight:600;color:#475569;margin-top:2px;">${escapeHtml(resumeData.role)}</div>` : ''}
+                <div style="font-size:11px;color:#334155;margin-top:6px;">${contactLine}</div>
+                ${resumeData.address ? `<div style="font-size:11px;color:#475569;margin-top:2px;">📍 ${escapeHtml(resumeData.address)}</div>` : ''}
+              </div>
+              ${getPhotoHtml(84, a)}
+            </div>
+          `;
+        }
+
+        sheet.innerHTML = `
+          <div style="padding:${pad};">
+            ${headerBlock}
+
+            ${resumeData.objective ? `
+              <div style="margin-bottom:13px;">
+                <div style="${stdHeading}">Career Objective</div>
+                <p style="font-size:11.5px;line-height:1.5;margin:0;color:#1e293b;">${escapeHtml(resumeData.objective)}</p>
+              </div>
+            ` : ''}
+
+            ${isFresher ? `
+              <div style="margin-bottom:13px;"><div style="${stdHeading}">Academic Qualifications</div>${getEducationHtml(a, cardStyle)}</div>
+              ${resumeData.skills.length ? `<div style="margin-bottom:13px;"><div style="${stdHeading}">Key Skills & Strengths</div><div>${getSkillsHtml(spec.skillStyle, a)}</div></div>` : ''}
+              ${resumeData.experience.length ? `<div style="margin-bottom:13px;"><div style="${stdHeading}">Internships & Experience</div>${getExperienceHtml(a, cardStyle)}</div>` : ''}
+            ` : `
+              ${resumeData.experience.length ? `<div style="margin-bottom:13px;"><div style="${stdHeading}">Work Experience</div>${getExperienceHtml(a, cardStyle)}</div>` : ''}
+              <div style="margin-bottom:13px;"><div style="${stdHeading}">Academic Qualifications</div>${getEducationHtml(a, cardStyle)}</div>
+              ${resumeData.skills.length ? `<div style="margin-bottom:13px;"><div style="${stdHeading}">Technical & Core Skills</div><div>${getSkillsHtml(spec.skillStyle, a)}</div></div>` : ''}
+            `}
+
+            ${getCustomSectionHtml(stdHeading)}
+
+            ${resumeData.showPersonal ? `
+              <div style="margin-top:13px;">
+                <div style="${stdHeading}">Personal Details</div>
+                ${getPersonalTableHtml()}
+              </div>
+            ` : ''}
+
+            ${getDeclarationHtml(a)}
+          </div>
+        `;
+      }
+
+      /* ----------------------------------------------------------------------
+         A4 AUTO-SCALE TO FIT MOBILE & PC VIEWPORTS
+         ---------------------------------------------------------------------- */
+      function applyA4Zoom() {
+        const wrapper = document.getElementById('a4-viewport-wrapper');
+        const scaleBox = document.getElementById('a4-scale-box');
+        const sheet = document.getElementById('resume-sheet');
+        if (!wrapper || !scaleBox || !sheet) return;
+
+        const a4WidthPx = 794;
+        let scale = 1;
+        if (currentZoom === 'fit') {
+          const avail = Math.max(280, wrapper.clientWidth - 32);
+          scale = Math.min(1, avail / a4WidthPx);
+        } else {
+          scale = parseFloat(currentZoom) || 1;
+        }
+
+        scaleBox.style.transform = `scale(${scale})`;
+        scaleBox.style.height = `${sheet.offsetHeight * scale}px`;
+      }
+
+      document.querySelectorAll('.zoom-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          currentZoom = btn.dataset.zoom;
+          applyA4Zoom();
+        });
+      });
+
+      window.addEventListener('resize', applyA4Zoom);
+
+      /* ----------------------------------------------------------------------
+         TOP TOOLBAR ACTIONS (DEMO FILL, BACKUP, RESTORE, RESET, PRINT, CODE)
+         ---------------------------------------------------------------------- */
+      document.getElementById('btn-sample-data').addEventListener('click', () => {
+        const keepTpl = resumeData.template;
+        resumeData = { ...getDefaultData(), template: keepTpl };
+        saveData();
+        populateFormFromState();
+        renderResume();
+        applyA4Zoom();
+        showToast('✨ Demo resume data loaded!');
+      });
+
+      document.getElementById('btn-reset-form').addEventListener('click', () => {
+        const keepTpl = resumeData.template;
+        resumeData = {
+          ...getDefaultData(),
+          template: keepTpl,
+          name: '',
+          role: '',
+          phone: '',
+          email: '',
+          address: '',
+          link: '',
+          photo: '',
+          objective: '',
+          education: [{ degree: '', institute: '', year: '', score: '' }],
+          experience: [],
+          skills: [],
+          father: '',
+          mother: '',
+          dob: '',
+          languages: '',
+          hobbies: '',
+          signature: '',
+          customTitle: '',
+          customItems: ''
+        };
+        sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+        saveData();
+        populateFormFromState();
+        renderResume();
+        showToast('↺ Form cleared for new candidate.');
+      });
+
+      document.getElementById('btn-export-json').addEventListener('click', () => {
+        const blob = new Blob([JSON.stringify(resumeData, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `${(resumeData.name || 'resume').toLowerCase().replace(/\s+/g, '-')}-backup.json`;
+        a.click();
+        showToast('⬇️ JSON Backup downloaded!');
+      });
+
+      document.getElementById('input-import-json').addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        const r = new FileReader();
+        r.onload = (ev) => {
+          try {
+            const parsed = JSON.parse(ev.target.result);
+            resumeData = { ...getDefaultData(), ...parsed };
+            saveData();
+            populateFormFromState();
+            renderResume();
+            showToast('✅ Resume backup restored!');
+          } catch (err) {
+            showToast('⚠️ Invalid JSON backup file.');
+          }
+        };
+        r.readAsText(file);
+      });
+
+      function triggerPrintPdf() {
+        const origTitle = document.title;
+        document.title = (resumeData.name || 'Resume') + ' - SOLU DIGITAL RESUME';
+        window.print();
+        document.title = origTitle;
+      }
+
+      document.getElementById('btn-print-pdf').addEventListener('click', triggerPrintPdf);
+      document.getElementById('mob-btn-pdf').addEventListener('click', triggerPrintPdf);
+
+      // Copy Standalone HTML Source Code Modal
+      const codeModal = document.getElementById('code-modal');
+      const codeBox = document.getElementById('source-code-box');
+
+      document.getElementById('btn-open-code').addEventListener('click', () => {
+        codeBox.value = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+        codeModal.classList.remove('hidden');
+      });
+      document.getElementById('btn-close-code').addEventListener('click', () => codeModal.classList.add('hidden'));
+
+      document.getElementById('btn-copy-html').addEventListener('click', () => {
+        codeBox.select();
+        document.execCommand('copy');
+        showToast('✅ Complete HTML Code Copied!');
+      });
+
+      document.getElementById('btn-download-html').addEventListener('click', () => {
+        const blob = new Blob([codeBox.value], { type: 'text/html;charset=utf-8' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'solu-digital-resume-builder-120.html';
+        a.click();
+        showToast('⬇️ Downloaded solu-digital-resume-builder-120.html');
+      });
+
+      /* ----------------------------------------------------------------------
+         BOOT APPLICATION
+         ---------------------------------------------------------------------- */
+      populateFormFromState();
+      renderResume();
+      setTimeout(applyA4Zoom, 60);
+    })();
+  </script>
+</body>
+</html>
